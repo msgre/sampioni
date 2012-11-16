@@ -1,0 +1,5 @@
+Django
+django-extensions
+django-model-utils
+django-debug-toolbar
+ipython
