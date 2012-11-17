@@ -8,9 +8,18 @@ rady, prip. dalsi verejne vystupy mesta (napr. Forum 2025, apod).
 """
 
 from django.db import models
+from django.utils.dateformat import DateFormat
+from django.conf import settings
+
+class BaseEvent(object):
+    def get_subtitle(self):
+        """
+        Vrati podnadpis.
+        """
+        raise NotImplementedError
 
 
-class RepresentativeAgenda(models.Model):
+class RepresentativeAgenda(BaseEvent, models.Model):
     """
     Jednani zastupitelstva.
     """
@@ -36,15 +45,19 @@ class RepresentativeAgenda(models.Model):
     def __unicode__(self):
         return u'%s %s' % (self.order, self.get_type_display())
 
+    def get_subtitle(self):
+        df = DateFormat(self.date)
+        return u'%s. %s jednání zastupitelstva, %s' % (self.order, self.get_type_display(), \
+                                                       df.format(settings.DATE_FORMAT))
 
-class RepresentativeAgendaItem(models.Model):
+
+class RepresentativeAgendaItem(BaseEvent, models.Model):
     """
     Bod na jednani zastupitelstva.
     """
     item    = models.CharField(u'Číslo bodu', max_length=10)
     title   = models.CharField(u'Titulek', max_length=1000)
     agenda  = models.ForeignKey(RepresentativeAgenda, verbose_name=u"Jednání zastupitelstva")
-    date    = models.DateTimeField(u"Datum konání")
     created = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
     updated = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
 
@@ -55,3 +68,6 @@ class RepresentativeAgendaItem(models.Model):
 
     def __unicode__(self):
         return u'%s %s' % (self.agenda, self.item)
+
+    def get_subtitle(self):
+        return u'%s %s, %s' % (self.item, self.title, self.agenda.get_subtitle())

@@ -1,0 +1,7 @@
+{% extends "bone.html" %}
+
+{% block content %}
+    <h1>{{ comment.title }}</h1>
+    <img src="http://chart.googleapis.com/chart?cht=qr&chs=200x200&chl={{ comment.get_absolute_url|escape }}" width="200" height="200" />
+    <p>Podrobnosti na www.{{ site.name }}{{ comment.get_absolute_url }}</p>
+{% endblock %}

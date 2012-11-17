@@ -1,0 +1,7 @@
+{% extends "bone.html" %}
+
+{% block content %}
+    <h1>{{ comment.title }}</h1>
+    <h2>{{ comment.content_object.get_subtitle }}</h2>
+    <p>Tohle je jakoze full detail</p>
+{% endblock %}
