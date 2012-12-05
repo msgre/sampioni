@@ -15,15 +15,21 @@ class RepresentativeVote(models.Model):
     REPRESENTATIVE_VOTE_NO      = u'-'
     REPRESENTATIVE_VOTE_NOTHING = u'0'
     REPRESENTATIVE_VOTE_MISSING = u'X'
+    REPRESENTATIVE_VOTE_LABELS = {
+        REPRESENTATIVE_VOTE_YES: u'Pro',
+        REPRESENTATIVE_VOTE_NO: u'Proti',
+        REPRESENTATIVE_VOTE_NOTHING: u'Zdržel se',
+        REPRESENTATIVE_VOTE_MISSING: u'Nehlasoval',
+    }
     REPRESENTATIVE_VOTE_CHOICES = (
-        (REPRESENTATIVE_VOTE_YES, u'Pro'),
-        (REPRESENTATIVE_VOTE_NO, u'Proti'),
-        (REPRESENTATIVE_VOTE_NOTHING, u'Zdržel se'),
-        (REPRESENTATIVE_VOTE_MISSING, u'Nehlasoval'),
+        (REPRESENTATIVE_VOTE_YES, REPRESENTATIVE_VOTE_LABELS[REPRESENTATIVE_VOTE_YES]),
+        (REPRESENTATIVE_VOTE_NO, REPRESENTATIVE_VOTE_LABELS[REPRESENTATIVE_VOTE_NO]),
+        (REPRESENTATIVE_VOTE_NOTHING, REPRESENTATIVE_VOTE_LABELS[REPRESENTATIVE_VOTE_NOTHING]),
+        (REPRESENTATIVE_VOTE_MISSING, REPRESENTATIVE_VOTE_LABELS[REPRESENTATIVE_VOTE_MISSING]),
     )
 
-    representative = models.ForeignKey("government.Representative", verbose_name=u'Zastupitel')
-    item           = models.ForeignKey("events.RepresentativeAgendaItem", verbose_name=u'Bod na jednání zastupitelstva')
+    representative = models.ForeignKey("authority.Representative", verbose_name=u'Zastupitel')
+    item           = models.ForeignKey("events.RepresentativeAgendaItem", verbose_name=u'Bod na jednání zastupitelstva', related_name='rvotes')
     vote           = models.CharField(u'Hlas', max_length=1, choices=REPRESENTATIVE_VOTE_CHOICES)
     created        = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
     updated        = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
@@ -47,7 +53,6 @@ class RepresentativeVote(models.Model):
         self.dpolitician_last_name = self.representative.dpolitician_last_name
         return super(RepresentativeVote, self).save(*args, **kwargs)
 
-
 class PublicVote(models.Model):
     """
     Hlasovani verejnosti ke konkretniho bodu jednani zastupitelstva.
@@ -60,7 +65,7 @@ class PublicVote(models.Model):
     )
 
     ip      = models.GenericIPAddressField("IP adresa", blank=True, null=True)
-    item    = models.ForeignKey("events.RepresentativeAgendaItem", verbose_name=u'Bod na jednání zastupitelstva')
+    item    = models.ForeignKey("events.RepresentativeAgendaItem", verbose_name=u'Bod na jednání zastupitelstva', related_name='pvotes')
     vote    = models.CharField(u'Hlas', max_length=1, choices=PUBLIC_VOTE_CHOICES)
     created = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
     updated = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)

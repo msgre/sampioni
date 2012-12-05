@@ -1,0 +1,117 @@
+{% extends "page2.html" %}
+
+{% block page_title %}
+    <h1>Nové zasedání zastupitelstva</h1>
+    <p>Volební období 2010—2014</p>
+{% endblock %}
+
+{% block page_content %}
+    <form class="form-horizontal">
+
+        {# zasedani #}
+        <fieldset>
+            <div id="legend" class="">
+                <legend class="">Zasedání</legend>
+            </div>
+
+            <div class="controls form-inline">
+                <input type="text" placeholder="Číslo zasedání" class="input-xlarge">
+                <label class="radio inline">
+                    <input type="radio" value="řádné" name="type" checked="checked">
+                    řádné
+                </label>
+                <label class="radio inline">
+                    <input type="radio" value="mimořádné" name="type">
+                    mimořádné
+                </label>
+                <input type="text" placeholder="Datum konání" class="input-xlarge">
+            </div>
+
+{% comment %}
+            {# cislo #}
+            <div class="control-group">
+                <label class="control-label" for="input01">Číslo zasedání</label>
+                <div class="controls">
+                    <input type="text" placeholder="" class="input-xlarge">
+                    <p class="help-block"></p>
+                </div>
+            </div>
+
+            {# radne/mimoradne #}
+            <div class="control-group">
+                <label class="control-label"></label>
+                <div class="controls">
+                    <label class="radio inline">
+                        <input type="radio" value="řádné" name="type" checked="checked">
+                        řádné
+                    </label>
+                    <label class="radio inline">
+                        <input type="radio" value="mimořádné" name="type">
+                        mimořádné
+                    </label>
+                </div>
+            </div>
+
+            {# datum konani #}
+            <div class="control-group">
+                <label class="control-label" for="input01">Datum konání</label>
+                <div class="controls">
+                    <input type="text" placeholder="date" class="input-xlarge">
+                    <p class="help-block"></p>
+                </div>
+            </div>
+{% endcomment %}
+        </fieldset>
+
+{#http://www.eyecon.ro/bootstrap-datepicker/#}
+        {# body #}
+        <fieldset>
+            <div id="legend" class="">
+                <legend class="">Program</legend>
+            </div>
+
+            <div class="controls form-inline">
+                <input type="text" placeholder="Bod programu" class="input-xlarge">
+                <textarea placeholder="Název bodu" class="input-xlarge" rows="3"></textarea>
+            </div>
+            <div class="controls form-inline">
+                <input type="text" placeholder="Bod programu" class="input-xlarge">
+                <textarea placeholder="Název bodu" class="input-xlarge" rows="3"></textarea>
+            </div>
+            <div class="controls form-inline">
+                <input type="text" placeholder="Bod programu" class="input-xlarge">
+                <textarea placeholder="Název bodu" class="input-xlarge" rows="3"></textarea>
+            </div>
+            <div class="controls form-inline">
+                <input type="text" placeholder="Bod programu" class="input-xlarge">
+                <textarea placeholder="Název bodu" class="input-xlarge" rows="3"></textarea>
+            </div>
+            <div class="controls form-inline">
+                <input type="text" placeholder="Bod programu" class="input-xlarge">
+                <textarea placeholder="Název bodu" class="input-xlarge" rows="3"></textarea>
+            </div>
+
+            {% comment %}
+            {# bod zasedani #}
+            <div class="control-group">
+                <label class="control-label" for="input01">Bod programu</label>
+                <div class="controls">
+                    <input type="text" placeholder="" class="input-xlarge">
+                    <p class="help-block"></p>
+                </div>
+            </div>
+
+            {# nazev bodu #}
+            <div class="control-group">
+                <label class="control-label" for="input01">Název bodu</label>
+                <div class="controls">
+                    <textarea class="input-xlarge" rows="3"></textarea>
+                </div>
+            </div>
+            {% endcomment %}
+
+        </fieldset>
+    </form>
+
+
+{% endblock %}

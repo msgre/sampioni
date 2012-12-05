@@ -1,7 +1,412 @@
-{% extends "bone.html" %}
+{% extends "page.html" %}
 
-{% block content %}
+{% load static %}
+{% get_static_prefix as STATIC_PREFIX %}
+
+{% block page_title %}
     <h1>{{ comment.title }}</h1>
-    <h2>{{ comment.content_object.get_subtitle }}</h2>
-    <p>Tohle je jakoze full detail</p>
+{% endblock %}
+
+{% block page_left %}
+    <header class='blog-header'>
+        <h2>
+            {{ comment.content_object.get_subtitle }}<br/>
+            <small><a href="#">20. řádné jednání zastupitelstva z 12.července 2012</a>, <a href="">volební období 2010&mdash;2014</a></small>
+        </h2>
+    </header>
+    <p>Fůru on loty tak, žes se napadl nu domů a&nbsp;září s&nbsp;vrhu lékařské souchotě malých. Obce nestálo úpěl jsi nespadlo nenajde spálu naši taky. Tě čí statků řekni dudek domovní a&nbsp;podnebí rameno poradě. 77 obce děťátko nadutě? Duše detektivy ti špačky že půdu vstal. Ano čí očí zlo bartoška všední. </p>
+    <p>Odsuzuje, ta mocí hadrů spletl domácká! Zní pošleš, 30 maminka. Kát si vy kouř chyba, ah nu rohu děvče poď. Uspaly povšechný z&nbsp;doživotní má takových s&nbsp;soudku i&nbsp;vztah. Tu koupím pleší. </p>
+    <p>Poraněně, newton, hledí vondráček v&nbsp;šátrá něj ni nos melocactus. Šeptal padlé tě 81 nu šatně ostré déle tulipána zapovídal známými mapě koubek. Sedli hrnu šlo jdeš, on že mým jeleních. Bral jasnou tou vůl ba hup jež potlačená. Knížce mrzáky hm otisk ji výpověď sofort. Leopoldii fortele o&nbsp;hodí syrová. Pšt vyšla sofa že špinavé nechtěl barvy. </p>
+
+{% comment %}
+    <h3>My, občané Valašského Meziříčí nerozumíme...</h3>
+
+<div class="btn-group" data-toggle="buttons-radio">
+  <button class="btn btn-small">Zobrazit všechny dotazy</button>
+  <button class="btn btn-small">Jen nezodpovězené</button>
+  <button class="btn btn-small">Jen zodpovězené</button>
+</div>
+
+<br/>
+{% endcomment %}
+    <h3>Nerozumíme...</h3>
+
+    <ol>
+       <li><strong><a href="#">Proč se zastupitelé vytrvale snaží zrušit školu, o kterou stojí bez mála 5.000 občanů?</a></strong><br/>
+           <small>Dotaz dne 9.července 2012 podal Michal Valoušek, 4 měsíce bez odpovědi</small></li>
+       <li><strong><a href="#">Proč za chyby zastupitelů mají nést rodiče a dětí základních škol ve Valašském Meziříčí?</a></strong><br/>
+           <small>Dotaz dne 12.července 2012 podal Petr Pittner, 3 měsíce bez odpovědi</small></li>
+       <li><strong><a href="#">Proč starosta Částečka zatajil před zastupiteli důležitá fakta o pozemku, na kterém leží ZŠ Žerotínova?</a></strong><br/>
+           <small>Dotaz dne 22.srpna 2012 podala Petra Blažková, <a href="">2 odpovědi</a></small></li>
+       <li><strong><a href="#">Proč se zastupitelé vytrvale snaží zrušit školu, o kterou stojí bez mála 5.000 občanů?</a></strong><br/>
+           <small>Dotaz dne 9.července 2012 podal Michal Valoušek, 4 měsíce bez odpovědi</small></li>
+       <li><strong><a href="#">Proč za chyby zastupitelů mají nést rodiče a dětí základních škol ve Valašském Meziříčí?</a></strong><br/>
+           <small>Dotaz dne 12.července 2012 podal Petr Pittner, 3 měsíce bez odpovědi</small></li>
+    </ol>
+    {% comment %}
+    <p>Fůru on loty tak, žes se napadl nu domů a&nbsp;září s&nbsp;vrhu lékařské souchotě malých. Obce nestálo úpěl jsi nespadlo nenajde spálu naši taky. Tě čí statků řekni dudek domovní a&nbsp;podnebí rameno poradě. 77 obce děťátko nadutě? Duše detektivy ti špačky že půdu vstal. Ano čí očí zlo bartoška všední. </p>
+    <p>Odsuzuje, ta mocí hadrů spletl domácká! Zní pošleš, 30 maminka. Kát si vy kouř chyba, ah nu rohu děvče poď. Uspaly povšechný z&nbsp;doživotní má takových s&nbsp;soudku i&nbsp;vztah. Tu koupím pleší. </p>
+    <p>Poraněně, newton, hledí vondráček v&nbsp;šátrá něj ni nos melocactus. Šeptal padlé tě 81 nu šatně ostré déle tulipána zapovídal známými mapě koubek. Sedli hrnu šlo jdeš, on že mým jeleních. Bral jasnou tou vůl ba hup jež potlačená. Knížce mrzáky hm otisk ji výpověď sofort. Leopoldii fortele o&nbsp;hodí syrová. Pšt vyšla sofa že špinavé nechtěl barvy. </p>
+    {% endcomment %}
+
+
+
+
+
+{% endblock %}
+
+{% block page_right %}
+            <div class="pull-center">
+                <i class="icon-thumbs-up enormous-icon circled pull-center"></i>
+                <h3>Zrušíme</h3>
+                <p>Nadpoloviční většina zastupitelu tento bod podpořila.</p>
+                {#<p><a href="">Verejnost by ale volila jine reseni</a></p>#}
+            </div>
+
+
+    {% comment %}
+    <ul class="unstyled">
+            <li class="active">
+              <h4>
+                <a href="#">Hlasovani zastupitelu</a>
+              </h4>
+              <p><small>Kdo a jak hlasoval</small></p>
+            </li>
+            <li>
+              <h4>
+                <a href="#">Nazor verejnosti</a>
+              </h4>
+              <p><small>Jak by jste se rozhodli vy?</small></p>
+            </li>
+            <li>
+              <h4>
+                <a href="#">Podklady k rozhodovani</a>
+              </h4>
+              <p><small>Materialy, ze kterych zastupitele vychazeli</small></p>
+            </li>
+            <li>
+              <h4>
+                <a href="#">Reakce medii</a>
+              </h4>
+              <p><small>Co se psalo</small></p>
+            </li>
+          </ul>
+    {% endcomment %}
+{% endblock %}
+
+{% block page_bottom %}
+
+            <ul id="myTab" class="nav nav-pills">
+              <li class="active"><a href="#hlasovani" data-toggle="tab">Hlasování zastupitelů</a></li>
+              <li class=""><a href="#verejnost" data-toggle="tab">Názor veřejnosti</a></li>
+              <li class=""><a href="#podklady" data-toggle="tab">Podklady</a></li>
+              <li class=""><a href="#media" data-toggle="tab">Media</a></li>
+            </ul>
+            <div id="myTabContent" class="tab-content">
+              <div class="tab-pane fade in active" id="hlasovani">
+
+          <div class="row-fluid">
+            <div class="span6">
+              <h3>Vysledek hlasovani zastupitelu</h3>
+              <p>Zastupitele tento bod tesnou vetsinou <strong>schvalili</strong>.</p>
+              <p><em>Pro schvaleni bodu je treba souhlasu nadpolovicni vetsiny
+              zastupitelu, tj. v pripade mesta Valasskeho Mezirici to je 13 hlasu.</em></p>
+            </div>
+            <div class="span6">
+              <h3>Co muzu jako obcan delat?</h3>
+              <ul>
+              <li>Pokud nejsi spokojen s vysledkem, zkontaktuj zastupitele
+              a podel se s nim.</li>
+              <li>Vyjadri svuj nazor v hlasovani verejnosti.</li>
+              <li>Doporuc tuhle stranku na Facebooku a dej vedet svym znamym.</li>
+              </ul>
+              <p>Pokud je nebudeme hlidat, budou si delat co chteji do nekonecna.</p>
+            </div>
+          </div>
+<hr/>
+
+{% comment %}
+<div class="progress">
+  <div class="bar bar-success" style="width: 35%;">Pro</div>
+  <div class="bar bar-danger" style="width: 22%;">Proti</div>
+  <div class="bar bar-warning" style="width: 25%;">Zdržel se</div>
+  <div class="bar" style="width: 18%;">Nehlasoval</div>
+</div>
+{% endcomment %}
+
+      <div class="thumbnails bordered people">
+          <div class="row-fluid">
+            <div class="span2 pull-center">
+              <i class="icon-thumbs-up enormous-icon pull-center"></i>
+              <h3>Pro</h3>
+              <p>12 hlasů<br/>45%</p>
+            </div>
+            <div class="span10">
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+            </div>
+          </div>
+          <hr>
+          <div class="row-fluid">
+            <div class="span2 pull-center">
+              <i class="icon-thumbs-down enormous-icon pull-center"></i>
+              <h3>Proti</h3>
+              <p>6 hlasů<br/>19%</p>
+            </div>
+            <div class="span10">
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+            </div>
+          </div>
+          <hr>
+          <div class="row-fluid">
+            <div class="span2 pull-center">
+              <i class="icon-question-sign enormous-icon pull-center"></i>
+              <h3>Zdrželi se</h3>
+              <p>3 hlasy<br/>7%</p>
+            </div>
+            <div class="span10">
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+            </div>
+          </div>
+          <hr>
+          <div class="row-fluid">
+            <div class="span2 pull-center">
+              <i class="icon-remove-circle enormous-icon pull-center"></i>
+              <h3>Nehlasovali</h3>
+              <p>1 hlas<br/>2%</p>
+            </div>
+            <div class="span10">
+                <div class="span2 pull-center person">
+                    <img src="{{ STATIC_PREFIX }}images/denk.jpeg" class="img-circle">
+                    <p>Ladislav Denk<br/>ČSSD<br /><a href="" class="btn btn-mini">Kontaktovat</a></p>
+                </div>
+            </div>
+          </div>
+      </div>
+
+              </div>
+              <div class="tab-pane fade" id="verejnost">
+
+    {#<h2>Názor veřejnosti <small>celkem 64 hlasu</small></h2>#}
+        <p>Jak by jste se rozhodli vy, kdyby jste meli moznost o tomto bode
+        hlasovat?</p>
+        <div class="progress">
+          <div class="bar bar-success" style="width: 35%;"></div>
+          <div class="bar bar-danger" style="width: 20%;"></div>
+          <div class="bar bar-warning" style="width: 45%;"></div>
+        </div>
+        <div class='row-fluid'>
+            <div class="span4">
+                <div class='row-fluid'>
+                    <div class="span3">
+                        <i class="icon-thumbs-up success enormous-icon"></i>
+                    </div>
+                    <div class="span9 pull-center">
+                        <button type="button" class="btn btn-success btn-large" data-loading-text="Loading...">Jsem pro</button>
+                        <p><small>Stejně jako 16 dalších lidí</small></p>
+                    </div>
+                </div>
+            </div>
+            <div class="span4">
+                <div class='row-fluid'>
+                    <div class="span3">
+                        <i class="icon-thumbs-down error enormous-icon"></i>
+                    </div>
+                    <div class="span9 pull-center">
+                        <button type="button" class="btn btn-danger btn-large" data-loading-text="Loading...">Jsem proti</button>
+                        <p><small>Stejně jako 16 dalších lidí</small></p>
+                    </div>
+                </div>
+            </div>
+            <div class="span4">
+                <div class='row-fluid'>
+                    <div class="span3">
+                        <i class="icon-question-sign warning enormous-icon"></i>
+                    </div>
+                    <div class="span9 pull-center">
+                        <button type="button" class="btn btn-warning btn-large" data-loading-text="Loading...">Nevím</button>
+                        <p><small>Stejně jako 16 dalších lidí</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+<h3>Mate k tomuto bodu nejake pripominky?</h3>
+<p>Vyjadrete svuj nazor na Facebooku</p>
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/cs_CZ/all.js#xfbml=1&appId=366065240124328";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+<div class="fb-comments" data-href="http://example.com" data-width="900" data-num-posts="2"></div>
+
+              </div>
+              <div class="tab-pane fade" id="podklady">
+
+    {#<h2>Podklady k rozhodování</h2>#}
+    <div class='row-fluid'>
+        <div class="span6">
+            <p>Ofiko materialy zastupitelu</p>
+            <ul>
+                <li><a href="">sdkjfk;lsdjfs</a></li>
+                <li><a href="">sdkjfk;lsdjfs</a></li>
+                <li><a href="">sdkjfk;lsdjfs</a></li>
+                <li><a href="">sdkjfk;lsdjfs</a></li>
+                <li><a href="">sdkjfk;lsdjfs</a></li>
+                <li><a href="">sdkjfk;lsdjfs</a></li>
+                <li><a href="">sdkjfk;lsdjfs</a></li>
+                <li><a href="">sdkjfk;lsdjfs</a></li>
+                <li><a href="">sdkjfk;lsdjfs</a></li>
+            </ul>
+        </div>
+        <div class="span6">
+            <h3>Zdají se Vám podklady nekompletní?</h3>
+            <p>Na zaklade jakych informaci se zastupitele rozhodovali?</p>
+        </div>
+    </div>
+
+              </div>
+              <div class="tab-pane fade" id="media">
+
+    <div class='row-fluid'>
+        <div class="span8">
+    {#<h2>Reakce medii a verejnosti</h2>#}
+        <div class="accordion">
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" href="#qOne">
+                  <i class="icon-plus-sign icon"></i> <strong>Why this theme is so nice?</strong> <small style="float:right">12.cervence 2012</small>
+                </a>
+              </div>
+              <div class="accordion-body collapse" id="qOne" style="height: 0px;">
+                <div class="accordion-inner">
+                  Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                </div>
+              </div>
+
+              <div class="accordion-heading">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" href="#qTwo">
+                  <i class="icon-plus-sign icon"></i> <strong>Kjshdf kj jkashdj akjshd kjhas dkjh aksjdh kjashd kjahsd kjahsd kjahsdkj klkj dksjf lksjd flkjlk skdjfh kjh?</strong> <small style="float:right">2.prosince 2012</small>
+                </a>
+              </div>
+              <div class="accordion-body collapse" id="qTwo" style="height: 0px;">
+                <div class="accordion-inner">
+                  Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="span4">
+            <h3>Narazili jste na dalsi dokument?</h3>
+            <p>Sem s nim</p>
+        </div>
+    </div>
+
+
+              </div>
+            </div>
+
+
+
+
 {% endblock %}

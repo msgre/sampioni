@@ -1,0 +1,154 @@
+{% extends "page.html" %}
+
+{% load static shared events %}
+{% get_static_prefix as STATIC_PREFIX %}
+
+{% block page_title %}
+    {# lidsky srozumitelny titulek #}
+    <h1>
+        {% if agenda_item.htitle %}
+            {{ agenda_item.htitle }}
+        {% else %}
+            <small>Srozumitelný titulek k tomuto bodu ještě nikdo nenavrhl… &nbsp;
+            <a href="#" class="btn">Zkuste to Vy!</a></small>
+        {% endif %}
+    </h1>
+{% endblock %}
+
+{% block page_left %}
+    {# oficialni nazev bodu #}
+    <header class='blog-header'>
+        <h2>
+            <span title="Oficiální název bodu">{{ agenda_item.item }}.&nbsp;{{ agenda_item.title }}</span><br />
+            <small><a href="{{ agenda_item.agenda.get_absolute_url }}">{{ agenda_item.agenda.order }}. {{ agenda_item.agenda.get_type_display|lower }} jednání zastupitelstva z {{ agenda_item.agenda.date|date }}</a>,
+            <a href="{% url agenda-list year_from=url_year_from year_to=url_year_to %}">volební období {{ agenda_item.agenda.term|endasher }}</a></small>
+        </h2>
+    </header>
+
+    {# popis bodu #}
+    {% if agenda_item.description %}
+        {{ agenda_item.description|safe }}
+    {% else %}
+        <p><em>Popis tohoto bodu ještě nikdo nesepsal.</em></p>
+        <p><a href="#" class="btn">Troufnete si?</a></p>
+    {% endif %}
+
+    {% comment %}
+    TODO: seznam dotazu "Nerozumim"
+    <h3>Nerozumíme...</h3>
+
+    <ol>
+       <li><strong>TODO</strong></li>
+    </ol>
+    {% endcomment %}
+{% endblock %}
+
+{% block page_right %}
+    {# celkovy verdikt hlasovani #}
+    {% if total_vote %}
+        <div class="pull-center">
+            <i class="{{ total_vote.icon }} enormous-icon circled pull-center"></i>
+            <h3>{{ total_vote.label }}</h3>
+            <p><a href="#bottom-tab">{% verdikt total_vote %}</a></p> {# TODO: plynuly posun dolu, nasadit offset -hlavicka #}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block page_bottom %}
+    {# prepinaci taby #}
+    <ul id="bottom-tab" class="nav nav-pills">
+        <li class="active"><a href="#zastupitele" data-toggle="tab">Hlasování zastupitelů</a></li>
+        {% if total_vote %}
+            {# NOTE: verejnost se muze vyjadrovat k necemu, o cem uz bylo rozhodnuto #}
+            <li class=""><a href="#verejnost" data-toggle="tab">Názor veřejnosti</a></li>
+        {% endif %}
+    </ul>
+
+    {# obsahy tabu #}
+    <div id="bottom-tabContent" class="tab-content">
+        {# hlasovani zastupitelu #}
+        <div class="tab-pane fade in active" id="zastupitele">
+
+            {# uvodni text na tabu s hlasovanim zastupitelu #}
+            <div class="row-fluid">
+                <div class="span6">
+                    <h3>Výsledek hlasování</h3>
+                    {% if total_vote %}
+                        <p>{% verdikt total_vote ":" %}
+                            {% for vote in votes.values %}
+                                {% if vote.votes > 0 %}
+                                    {{ vote.label }}&nbsp;{{ vote.votes }}&nbsp;{{ vote.votes|grammar:"0=hlasů,1=hlas,4=hlasy,?=hlasů" }}&nbsp;({{ vote.votes_perc|floatformat:"-1" }}%){% if forloop.last %}.{% else %},{% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                        <p><em>Pro schválení je třeba souhlasu nadpoloviční většiny, tj. celkem {{ total_vote.limit }} hlasů.</em></p>
+                    {% else %}
+                        {% if in_future %}
+                            <p><em>Pro tento bod se ještě nehlasovalo.</em></p>
+                        {% else %}
+                            <p><em>Pro tento bod nemáme údaje o hlasování.</em></p>
+                            <p><a href="#" class="btn">Pomožte nám je zadat</a></p>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="span6">
+                    {% if total_vote %}
+                        <h3>Nesouhlasíte s verdiktem zastupitelů?</h3>
+                        {# TODO: dopsat co muzou delat #}
+                        <ul>
+                            <li>Pokud nejsi spokojen s vysledkem, zkontaktuj zastupitele a podel se s nim.</li>
+                            <li>Vyjadri svuj nazor v hlasovani verejnosti.</li>
+                            <li>Doporuc tuhle stranku na Facebooku a dej vedet svym znamym.</li>
+                        </ul>
+                        <p>Pokud je nebudeme hlidat, budou si delat co chteji do nekonecna.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <hr/>
+
+            {# vypis hlasovani zastupitelu #}
+            <div class="thumbnails bordered people">
+                {% if votes %}
+                    {% for vote in votes.values %}
+                        {% if vote.votes > 0%}
+                            <div class="row-fluid">
+                                <div class="span2 pull-center">
+                                    <i class="{{ vote.icon }} enormous-icon pull-center"></i>
+                                    <h3>{{ vote.label }}</h3>
+                                    <p>{{ vote.votes }}&nbsp;{{ vote.votes|grammar:"0=hlasů,1=hlas,4=hlasy,?=hlasů" }}<br />{{ vote.votes_perc|floatformat:"-1" }}%</p>
+                                </div>
+                                <div class="span10">
+                                    {% for representative in vote.representatives %}
+                                        <div class="span2 pull-center person">
+                                            <img src="{% if representative.politician.photo %}{{ representative.politician.photo.url }}{% endif %}" class="img-circle" />
+                                            <p><small><a href="#">{{ representative.get_full_name }}</a><br /><a href="#">{{ representative.dparty_short }}</a>{# TODO: <br /><a href="" class="btn btn-mini">Kontaktovat</a>#}</small></p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% if not forloop.last %}<hr />{% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p><em>O tomto bodu se ještě nehlasovalo</em>.</p>
+                {% endif %}
+            </div>
+        </div>{# /zastupitele #}
+
+        {# nazor verejnosti #}
+        {% if total_vote %}
+            {# NOTE: verejnost se muze vyjadrovat k necemu, o cem uz bylo rozhodnuto #}
+            <div class="tab-pane fade" id="verejnost">
+                <div class="row-fluid">
+                    <div class="span6">
+                        <p>Bla</p>
+                    </div>
+                    <div class="span6">
+                        <p>Bla</p>
+                    </div>
+                </div>
+            </div>{# /verejnost #}
+        {% endif %}
+    </div>{# /obsahy tabu#}
+{% endblock %}

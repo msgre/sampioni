@@ -1,0 +1,16 @@
+{% extends "bone.html" %}
+
+{% block content %}
+    <section class='section alt' id='promo'>
+      <div class='container'>
+        <div class='hero-unit'>
+          {% block page_title %}{% endblock %}
+        </div>
+      </div>
+    </section>
+    <section class='section'>
+      <div class='container'>
+        {% block page_content %}{% endblock %}
+      </div>
+    </section>
+{% endblock %}
