@@ -3,6 +3,8 @@
 
 from django import template
 
+import ttag
+
 register = template.Library()
 
 
@@ -37,3 +39,28 @@ def grammar(count, variants):
             return variants[k]
         elif count <= k:
             return variants[k]
+
+
+@register.filter
+def key(item, key):
+    print item
+    print key
+    return item.get(key, None)
+
+
+class Variable(ttag.helpers.AsTag):
+    """
+    Vlozi vyraz do kontextu sablony pod zadanym nazvem.
+
+    Priklad:
+        {% variable product_variants|numkey:form.variant_id.value as product_variant %}
+
+        V kontextu se objevi promenna {{ product_variant }} jejiz obsah bude
+        roven {{ product_variants|numkey:form.variant_id.value }}
+    """
+    expression = ttag.Arg()
+
+    def output(self, data):
+        return data['expression']
+
+register.tag(Variable)

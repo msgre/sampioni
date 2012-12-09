@@ -29,3 +29,14 @@
   margin-left: 0;
     margin-right: 2.5641%;
 }
+
+.confused p,
+.confused i,
+.confused h3,
+.confused img {
+    opacity: .6;
+}
+
+.nav.nav-pills a.confused {
+	text-decoration: line-through;
+}

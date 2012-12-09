@@ -2,7 +2,8 @@
 
 from django.contrib import admin
 
-from .models import RepresentativeVote, PublicVote
+from .models import RepresentativeVoting, RepresentativeVote, PublicVote
 
+admin.site.register(RepresentativeVoting)
 admin.site.register(RepresentativeVote)
 admin.site.register(PublicVote)

@@ -7,9 +7,39 @@ Hlasovani k bodum z jednani zastupitelstva.
 from django.db import models
 
 
+class RepresentativeVoting(models.Model):
+    """
+    Hlasovani ke konkretnimu bodu na jednani.
+
+    Poznamka: puvodne jsem si myslel, ze co bod jednani, to jedno hlasovani.
+    Omyl! Je to pekny chaos. Nekdy se o temze bodu hlasuje vicekrat (prvni
+    hlasovani se prohlasi za zmatecne), nekdy se hlasuje o kazdem podbode
+    bodu zvlast, nekdy se v ramci bodu objevi protinavrh a hlasuje se
+    o puvodnim zneni i o protinarhu, ... Variant je asi nekonecno.
+
+    Proto je treba mit mezi konkretnim bode a hlasem zastupitele tento
+    model.
+    """
+    item        = models.ForeignKey("events.RepresentativeAgendaItem", verbose_name=u'Bod na jednání zastupitelstva', related_name='voting')
+    order       = models.IntegerField(u"Pořadí", default=1, help_text=u'Pokud se k bodu hlasuje vícekrát, jaké pořadové číslo mělo toto hlasování?.')
+    description = models.TextField(u"Popis hlasování", blank=True, null=True, help_text=u'Pokud se k bodu hlasuje vícekrát, je třeba jednotlivé hlasování od sebe odlišit nějakým popisem o co šlo.')
+    confused    = models.BooleanField(u"Zmatečné hlasování", default=False, help_text=u'Někdy se o hlasování prohlásí, že bylo zmatečné. Byl to tento případ?')
+    created     = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
+    updated     = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
+
+    class Meta:
+        verbose_name = u'Hlasování zastupitelů k projednávanému bodu'
+        verbose_name_plural = u'Hlasování zastupitelů k projednávaným bodům'
+        ordering = ('-created', )
+
+    def __unicode__(self):
+        description = self.description and self.description[:15] or u''
+        return u'%s %s' % (self.item, description)
+
+
 class RepresentativeVote(models.Model):
     """
-    Hlasovani zastupitele u konkretniho bodu jednani zastupitelstva.
+    Hlas zastupitele u konkretniho hlasovani.
     """
     REPRESENTATIVE_VOTE_YES     = u'+'
     REPRESENTATIVE_VOTE_NO      = u'-'
@@ -29,7 +59,7 @@ class RepresentativeVote(models.Model):
     )
 
     representative = models.ForeignKey("authority.Representative", verbose_name=u'Zastupitel')
-    item           = models.ForeignKey("events.RepresentativeAgendaItem", verbose_name=u'Bod na jednání zastupitelstva', related_name='rvotes')
+    voting         = models.ForeignKey(RepresentativeVoting, verbose_name=u'Hlasování na jednání zastupitelstva', related_name='rvote')
     vote           = models.CharField(u'Hlas', max_length=1, choices=REPRESENTATIVE_VOTE_CHOICES)
     created        = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
     updated        = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
@@ -41,7 +71,8 @@ class RepresentativeVote(models.Model):
     class Meta:
         verbose_name = u'Hlas zastupitele'
         verbose_name_plural = u'Hlasy zastupitelů'
-        ordering = ('-item__agenda__term__valid_from', 'dparty_short', 'dpolitician_last_name', )
+        #ordering = ('-item__agenda__term__valid_from', 'dparty_short', 'dpolitician_last_name', )
+        ordering = ('-created', )
 
     def __unicode__(self):
         return u'%s %s: %s' % (self.dpolitician_first_name, self.dpolitician_last_name, \
@@ -52,6 +83,7 @@ class RepresentativeVote(models.Model):
         self.dpolitician_first_name = self.representative.dpolitician_first_name
         self.dpolitician_last_name = self.representative.dpolitician_last_name
         return super(RepresentativeVote, self).save(*args, **kwargs)
+
 
 class PublicVote(models.Model):
     """

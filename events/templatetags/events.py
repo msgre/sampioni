@@ -6,11 +6,11 @@ from django import template
 register = template.Library()
 
 @register.simple_tag
-def verdikt(data, end="."):
+def verdikt(data, key, end="."):
     """
     Slovni vyjadreni vysledku hlasovani u konkretniho bodu.
     """
-    tightly = u'těsnou většinou' if data['result_bool'] and data['tightly'] else u''
-    yes = u'schválili' if data['result_bool'] else u'neschválili'
+    tightly = u' těsnou většinou' if data[key]['result_bool'] and data[key]['tightly'] else u''
+    yes = u'schválili' if data[key]['result_bool'] else u'neschválili'
     msg = u'Zastupitelé tento bod%s %s%s' % (tightly, yes, end)
     return msg

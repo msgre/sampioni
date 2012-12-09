@@ -3,7 +3,7 @@ django-extensions
 django-model-utils
 django-debug-toolbar
 ipython
-
 -e git+https://github.com/jsocol/bleach.git#egg=bleach
 Markdown
 PIL
+django-ttag

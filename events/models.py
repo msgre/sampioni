@@ -52,36 +52,38 @@ class RepresentativeAgenda(models.Model):
                                       'agenda': self.order})
 
 
-REPRESENTATIVE_DEFAULTS = SortedDict([
-    (RepresentativeVote.REPRESENTATIVE_VOTE_YES, {
-        'icon': 'icon-thumbs-up',
-        'label': RepresentativeVote.REPRESENTATIVE_VOTE_LABELS[RepresentativeVote.REPRESENTATIVE_VOTE_YES],
-        'votes': 0,
-        'votes_perc': 0,
-        'representatives': []
-    }),
-    (RepresentativeVote.REPRESENTATIVE_VOTE_NO, {
-        'icon': 'icon-thumbs-down',
-        'label': RepresentativeVote.REPRESENTATIVE_VOTE_LABELS[RepresentativeVote.REPRESENTATIVE_VOTE_NO],
-        'votes': 0,
-        'votes_perc': 0,
-        'representatives': []
-    }),
-    (RepresentativeVote.REPRESENTATIVE_VOTE_NOTHING, {
-        'icon': 'icon-question-sign',
-        'label': RepresentativeVote.REPRESENTATIVE_VOTE_LABELS[RepresentativeVote.REPRESENTATIVE_VOTE_NOTHING],
-        'votes': 0,
-        'votes_perc': 0,
-        'representatives': []
-    }),
-    (RepresentativeVote.REPRESENTATIVE_VOTE_MISSING, {
-        'icon': 'icon-remove-circle',
-        'label': RepresentativeVote.REPRESENTATIVE_VOTE_LABELS[RepresentativeVote.REPRESENTATIVE_VOTE_MISSING],
-        'votes': 0,
-        'votes_perc': 0,
-        'representatives': []
-    })
-])
+REPRESENTATIVE_DEFAULTS = {
+    'data': SortedDict([
+        (RepresentativeVote.REPRESENTATIVE_VOTE_YES, {
+            'icon': 'icon-thumbs-up',
+            'label': RepresentativeVote.REPRESENTATIVE_VOTE_LABELS[RepresentativeVote.REPRESENTATIVE_VOTE_YES],
+            'votes': 0,
+            'votes_perc': 0,
+            'representatives': []
+        }),
+        (RepresentativeVote.REPRESENTATIVE_VOTE_NO, {
+            'icon': 'icon-thumbs-down',
+            'label': RepresentativeVote.REPRESENTATIVE_VOTE_LABELS[RepresentativeVote.REPRESENTATIVE_VOTE_NO],
+            'votes': 0,
+            'votes_perc': 0,
+            'representatives': []
+        }),
+        (RepresentativeVote.REPRESENTATIVE_VOTE_NOTHING, {
+            'icon': 'icon-question-sign',
+            'label': RepresentativeVote.REPRESENTATIVE_VOTE_LABELS[RepresentativeVote.REPRESENTATIVE_VOTE_NOTHING],
+            'votes': 0,
+            'votes_perc': 0,
+            'representatives': []
+        }),
+        (RepresentativeVote.REPRESENTATIVE_VOTE_MISSING, {
+            'icon': 'icon-remove-circle',
+            'label': RepresentativeVote.REPRESENTATIVE_VOTE_LABELS[RepresentativeVote.REPRESENTATIVE_VOTE_MISSING],
+            'votes': 0,
+            'votes_perc': 0,
+            'representatives': []
+        })
+    ])
+}
 
 class RepresentativeAgendaItem(models.Model):
     """
@@ -89,17 +91,21 @@ class RepresentativeAgendaItem(models.Model):
     """
     AGENDA_RESULT_YES = '+'
     AGENDA_RESULT_NO  = '-'
+    AGENDA_RESULT_CONFUSED = '?'
     AGENDA_RESULT_LABELS = {
         AGENDA_RESULT_YES: u'Schváleno',
         AGENDA_RESULT_NO: u'Neschváleno',
+        AGENDA_RESULT_CONFUSED: u'Zmatečné',
     }
     AGENDA_RESULT_ICONS = {
         AGENDA_RESULT_YES: u'icon-thumbs-up',
         AGENDA_RESULT_NO: u'icon-thumbs-down',
+        AGENDA_RESULT_CONFUSED: u'icon-question-sign',
     }
     AGENDA_RESULT_CHOICES = (
         (AGENDA_RESULT_YES, AGENDA_RESULT_LABELS[AGENDA_RESULT_YES]),
         (AGENDA_RESULT_NO, AGENDA_RESULT_LABELS[AGENDA_RESULT_NO]),
+        (AGENDA_RESULT_CONFUSED, AGENDA_RESULT_LABELS[AGENDA_RESULT_CONFUSED]),
     )
 
     item             = models.CharField(u'Číslo bodu', max_length=10)
@@ -134,46 +140,72 @@ class RepresentativeAgendaItem(models.Model):
         self.description = typotexy(process_markdown(self.description_orig))
         return super(RepresentativeAgendaItem, self).save(*args, **kwargs)
 
-    def get_votes_data(self):
+    def get_voting_data(self):
         """
         Vrati SortedDict s prubehem hlasovani.
         """
-        out = deepcopy(REPRESENTATIVE_DEFAULTS)
-
+        out = SortedDict()
         # rozprcani zastupitelu do slovniku
-        counter = 0
-        for rvote in self.rvotes.all().order_by('representative__politician__last_name'):
-            out[rvote.vote]['representatives'].append(rvote.representative)
-            out[rvote.vote]['votes'] += 1
-            counter += 1
+        for voting in self.voting.all().order_by('order'):
+            counter = 0
+            _item = deepcopy(REPRESENTATIVE_DEFAULTS)
+            for rvote in voting.rvote.all().order_by('representative__politician__last_name'):
+                _item['data'][rvote.vote]['representatives'].append(rvote.representative)
+                _item['data'][rvote.vote]['votes'] += 1
+                counter += 1
 
-        if counter == 0:
-            return None
+            if counter == 0:
+                continue
+            _item['confused'] = voting.confused
+            _item['description'] = voting.description
+            _item['order'] = voting.order
 
-        # vypocet procent
-        for k in out:
-            out[k]['votes_perc'] = 100 * out[k]['votes'] / float(counter)
+            # vypocet procent
+            for k in _item['data']:
+                _item['data'][k]['votes_perc'] = 100 * _item['data'][k]['votes'] / float(counter)
+
+            out[voting.order] = _item
 
         return out
 
-    def get_total_vote(self, data):
+    def get_total_voting(self, voting):
         """
-        Celkovy verdikt hlasovani k tomuto bodu.
+        Celkovy verdikt hlasovani.
         """
-        if not data:
+        if not voting:
             return None
-        total = sum([data[k]['votes'] for k in data])
-        limit = int(math.ceil(total / 2.0))
-        win = [k for k in data if data[k]['votes'] >= limit]
-        if win and win[0] == RepresentativeVote.REPRESENTATIVE_VOTE_YES:
-            result = self.AGENDA_RESULT_YES
-        else:
-            result = self.AGENDA_RESULT_NO
 
-        return {'result': result,
-                'result_bool': result == self.AGENDA_RESULT_YES,
-                'limit': limit,
-                'total': total,
-                'tightly': result==self.AGENDA_RESULT_YES and data[win[0]]['votes'] <= limit + 2,
-                'icon': self.AGENDA_RESULT_ICONS[win[0]],
-                'label': self.AGENDA_RESULT_LABELS[win[0]]}
+        out = {'data': {}}
+        for order in voting:
+            if not voting[order] or not voting[order]['data']:
+                continue
+            item = voting[order]['data']
+
+            total = sum([item[k]['votes'] for k in item])
+            limit = int(math.ceil(total / 2.0))
+            win = [k for k in item if item[k]['votes'] >= limit]
+            if voting[order]['confused']:
+                result = self.AGENDA_RESULT_CONFUSED
+            elif win and win[0] == RepresentativeVote.REPRESENTATIVE_VOTE_YES:
+                result = self.AGENDA_RESULT_YES
+            else:
+                result = self.AGENDA_RESULT_NO
+
+            out['data'][order] = {'result': result,
+                                  'result_bool': result == self.AGENDA_RESULT_YES,
+                                  'limit': limit,
+                                  'total': total,
+                                  'tightly': result==self.AGENDA_RESULT_YES and item[win[0]]['votes'] <= limit + 2,
+                                  'icon': self.AGENDA_RESULT_ICONS[result],
+                                  'label': self.AGENDA_RESULT_LABELS[result],
+                                  'confused': voting[order]['confused'],
+                                  'description': voting[order]['description'],
+                                  'order': voting[order]['order']}
+
+        # doplnime statisticke udaje o celkovych vysledcich
+        out['confused_count'] = len([1 for k in out['data'] if out['data'][k]['confused']])
+        out['total_count'] = len(out['data'])
+        out['valid_count'] = out['total_count'] - out['confused_count']
+        out['multiple_icon'] = 'icon-reorder'
+
+        return out

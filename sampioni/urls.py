@@ -8,12 +8,12 @@ from comments.views import HebloCommentDetailView, CommentDetailView
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    url(r'^admin/', include(admin.site.urls)),
     url(r'^zastupitelstvo/', include('events.urls')),
 
     (r'^komentare/', include('comments.urls')),
     (r'^$', TemplateView.as_view(template_name="homepage.html")),
     (r'^faq/$', TemplateView.as_view(template_name="faq.html")),
-    url(r'^admin/', include(admin.site.urls)),
     # testy
     (r'^volebni-obdobi/$', TemplateView.as_view(template_name="comments/volebni_obdobi.html")),
     (r'^volebni-obdobi/2010-2014/$', TemplateView.as_view(template_name="comments/volebni_obdobi_2010.html")),

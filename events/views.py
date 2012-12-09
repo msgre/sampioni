@@ -81,10 +81,11 @@ class AgendaItemDetailView(DetailView):
             'url_year_to': self.kwargs['year_to'],
             'url_agenda': self.kwargs['agenda'],
             'url_item': self.kwargs['item'],
-            'votes': self.object.get_votes_data(),
+            'voting': self.object.get_voting_data(),
             'deep_history': delta.total_seconds() > SECONDS_PER_DAY * 10,
             'in_future': delta.total_seconds() < SECONDS_PER_DAY / 2
         })
+
         # celkove hlasovani o bode
-        out['total_vote'] = self.object.get_total_vote(out['votes'])
+        out['total_voting'] = self.object.get_total_voting(out['voting'])
         return out
