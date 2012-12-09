@@ -5,11 +5,12 @@
 
 {% block page_title %}
     {# lidsky srozumitelny titulek #}
-    <h1>
+    <h1{% if not programme_item.htitle%} class="{% if programme_item.title|length > 200 %}tiny{% elif programme_item.title|length > 110 %}small{% endif %}"{% endif %}>
         {% if programme_item.htitle %}
-            {{ programme_item.htitle }}
+            {{ programme_item.item }}.&nbsp;{{ programme_item.htitle }}
         {% else %}
-            <small>Srozumitelný název tohoto bodu ještě nikdo nenavrhl… &nbsp;
+            <span>{{ programme_item.item }}.&nbsp;{{ programme_item.title }}</span>
+            <br /><small>Srozumitelný název tohoto bodu ještě nikdo nenavrhl… &nbsp;
             <a href="#" class="btn">Zkuste to Vy!</a></small>
         {% endif %}
     </h1>
@@ -19,7 +20,9 @@
     {# oficialni nazev bodu #}
     <header class='blog-header'>
         <h2>
-            <span title="Oficiální název bodu">{{ programme_item.item }}.&nbsp;{{ programme_item.title }}</span><br />
+            {% if programme_item.htitle %}
+                <span title="Oficiální název bodu">{{ programme_item.title }}</span><br />
+            {% endif %}
             <small><a href="{{ programme_item.programme.get_absolute_url }}">{{ programme_item.programme.order }}. {{ programme_item.programme.get_type_display|lower }} jednání zastupitelstva z {{ programme_item.programme.date|date }}</a>,
             <a href="{% url programme-list year_from=url_year_from year_to=url_year_to %}">volební období {{ programme_item.programme.term|endasher }}</a></small>
         </h2>
@@ -41,6 +44,14 @@
        <li><strong>TODO</strong></li>
     </ol>
     {% endcomment %}
+
+    {% variable programme_item.get_next as next_item %}
+    {% variable programme_item.get_prev as prev_item %}
+    <ul class="pager">
+        {% if prev_item %}<li{# class="previous"#}><a href="{{ prev_item.get_absolute_url }}">&larr; Předchozí bod <strong>{{ prev_item.item }}</strong></a></li>{% endif %}
+        <li><a href="#">Vybrat bod ze seznamu</a></li>
+        {% if next_item %}<li{# class="next"#}><a href="{{ next_item.get_absolute_url }}">Následující bod <strong>{{ next_item.item }}</strong> &rarr;</a></li>{% endif %}
+    </ul>
 {% endblock %}
 
 {% block page_right %}
@@ -55,7 +66,7 @@
                 <div class="pull-center">
                     <i class="{{ total_vote.icon }} enormous-icon circled pull-center"></i>
                     <h3>{{ total_vote.label }}</h3>
-                    {#<p><a href="#bottom-tab">{% verdikt total_voting.data voting_key %}</a></p>#}
+                    <a href="#bottom-tab">Podrobnosti níže</a></p>
                 </div>
             {% endif %}
         {% endfor %}

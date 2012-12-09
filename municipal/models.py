@@ -4,6 +4,7 @@
 TODO:
 """
 
+import re
 import math
 from copy import deepcopy
 
@@ -85,6 +86,9 @@ PROGRAMME_DEFAULT = {
     ])
 }
 
+
+NUMBERS_RE = re.compile(r'\d+')
+
 class ProgrammeItem(models.Model):
     """
     Bod na programu jednani zastupitelstva.
@@ -119,13 +123,15 @@ class ProgrammeItem(models.Model):
     description_orig = models.TextField(u'Popis', blank=True, null=True)
     description      = models.TextField(editable=False, blank=True, null=True)
     programme        = models.ForeignKey(Programme, verbose_name=u"Program jednání zastupitelstva", related_name='items')
+    # denormalizace
+    ditem            = models.CharField(editable=False, max_length=30)
     created          = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
     updated          = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
 
     class Meta:
         verbose_name = u'Bod na programu jednání zastupitelstva'
         verbose_name_plural = u'Body z programu jednání zastupitelstva'
-        ordering = ('item', ) # TODO: item musim denormalizovat do cisla, klidne decimalu, a radit pak podle nej trebas
+        ordering = ('ditem', )
 
     def __unicode__(self):
         return u'%s %s' % (self.programme, self.item)
@@ -140,7 +146,25 @@ class ProgrammeItem(models.Model):
 
     def save(self, *args, **kwargs):
         self.description = typotexy(process_markdown(self.description_orig))
+        self.ditem = self.denormalize_item()
         return super(ProgrammeItem, self).save(*args, **kwargs)
+
+    def denormalize_item(self):
+        """
+        Prevadi atribut item (treba ve tvaru 1.2) do normalizovaneho tvaru
+        (001-003).
+        """
+        return '-'.join(["%03i" % int(i) for i in NUMBERS_RE.findall(self.item)])
+
+    def get_next(self):
+        qs = ProgrammeItem.objects.filter(programme=self.programme, \
+                                          item__gt=self.item).order_by('ditem')
+        return qs[0] if qs.exists() else None
+
+    def get_prev(self):
+        qs = ProgrammeItem.objects.filter(programme=self.programme, \
+                                          item__lt=self.item).order_by('-ditem')
+        return qs[0] if qs.exists() else None
 
     def get_voting_data(self):
         """

@@ -40,3 +40,12 @@
 .nav.nav-pills a.confused {
 	text-decoration: line-through;
 }
+
+.hero-unit h1.small {
+    font-size:40px;
+    line-height:40px;
+}
+.hero-unit h1.tiny {
+    font-size:30px;
+    line-height:30px;
+}
