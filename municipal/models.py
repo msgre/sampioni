@@ -227,7 +227,7 @@ class Decision(models.Model):
     description      = models.TextField(editable=False, blank=True, null=True)
     voting           = models.ForeignKey('voting.RepresentativeVoting', verbose_name=u"Hlasování k bodu programu", related_name='decisions')
     term             = models.CharField(u'Termín', max_length=50, blank=True, null=True)
-    responsibles     = models.ManyToManyField('authority.Person', verbose_name=u"Zodpovědné osoby", related_name="decisions")
+    responsibles     = models.ManyToManyField('authority.Person', verbose_name=u"Zodpovědné osoby", related_name="decisions", blank=True, null=True)
     created          = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
     updated          = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
 

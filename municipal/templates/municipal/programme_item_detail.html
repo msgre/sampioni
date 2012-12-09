@@ -94,11 +94,11 @@
     <ul id="bottom-tab" class="nav nav-pills">
         {% for total_vote in total_voting.data.values %}
             <li{% if forloop.first %} class="active"{% endif %}>
-                <a href="#zastupitele-{{ total_vote.order }}" data-toggle="tab"{% if total_vote.confused %} title="Zmatečné hlasování" class="confused"{% endif %}>Hlasování&nbsp;č.{{ total_vote.order }}</a>
+                <a href="#hlasovani-{{ total_vote.order }}" data-toggle="tab"{% if total_vote.confused %} title="Zmatečné hlasování" class="confused"{% endif %}>Hlasování&nbsp;č.{{ total_vote.order }}</a>
             </li>
         {% empty %}
             {# specialni pripad -- hlasovani v DB nemame, ale chceme zalozku zobrazit kvuli vyzve k akci #}
-            <li class="active"><a href="#zastupitele" data-toggle="tab">Hlasování zastupitelů</a></li>
+            <li class="active"><a href="#hlasovani" data-toggle="tab">Hlasování zastupitelů</a></li>
         {% endfor %}
     </ul>
 
@@ -107,12 +107,12 @@
 
         {# hlasovani zastupitelu #}
         {% for voting_key, voting_item in voting.items %}
-            <div class="tab-pane fade{% if forloop.first %} in active{% endif %}" id="zastupitele-{{ forloop.counter }}">
+            {% variable total_voting.data|key:voting_key as total_vote %}
+            <div class="tab-pane fade{% if forloop.first %} in active{% endif %}" id="hlasovani-{{ total_vote.order }}">
                 {# uvodni text na tabu s hlasovanim zastupitelu #}
                 <div class="row-fluid">
                     <div class="span7">
                         <div class="span4 pull-center">
-                            {% variable total_voting.data|key:voting_key as total_vote %}
                             <i class="{{ total_vote.icon }} enormous-icon pull-center"></i>
                             <h3>{{ total_vote.label }}</h3>
                         </div>
@@ -185,9 +185,11 @@
         - mozna pridam flag k hlasovani, jestli je mozne k tomuto bodu hlasovat verejnosti
     - musi tam byt zobrazeny absolutni a procentuelni hlasy
 {% endcomment %}
-                        <h3>Názor veřejnosti</h3>
-                        <p>Souhlasíte s verdiktem zastupitelů? <a class="btn btn-small" href="#">Ano</a> <a class="btn btn-small" href="#">Ne</a></p>
-                        <img src="//chart.googleapis.com/chart?chf=a,s,000000|bg,s,FFFFFF00&chs=300x225&cht=p&chco=008000|FF0000&chd=s:Qt&chl=ANO|NE&chma=20,20,20,20" width="300" height="225" alt="" />
+                        {% if not voting_item.confused %}
+                            <h3>Názor veřejnosti</h3>
+                            <p>Souhlasíte s verdiktem zastupitelů? <a class="btn btn-small" href="#">Ano</a> <a class="btn btn-small" href="#">Ne</a></p>
+                            <img src="//chart.googleapis.com/chart?chf=a,s,000000|bg,s,FFFFFF00&chs=300x225&cht=p&chco=008000|FF0000&chd=s:Qt&chl=ANO|NE&chma=20,20,20,20" width="300" height="225" alt="" />
+                        {% endif %}
                     </div>
                 </div>
 
@@ -220,16 +222,16 @@
                         <p><em>O tomto bodu se ještě nehlasovalo</em>.</p>
                     {% endif %}
                 </div>
-            </div>{# /zastupitele-X #}
+            </div>{# /hlasovani-X #}
         {% empty %}
-            <div class="tab-pane fade in active" id="zastupitele">
+            <div class="tab-pane fade in active" id="hlasovani">
                 {# uvodni text na tabu s hlasovanim zastupitelu #}
                 <div class="row-fluid">
                     <div class="span12">
                         <p><em>O tomto bodu programu se ještě nehlasovalo anebo se nám ještě nepodařilo sehnat veškeré podklady. Stavte se později.</em></p>
                     </div>
                 </div>
-            </div>{# /zastupitele #}
+            </div>{# /hlasovani #}
         {% endfor %}
     </div>{# /obsahy tabu#}
 {% endblock %}
