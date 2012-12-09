@@ -7,23 +7,23 @@ from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404
 
 from authority.models import Term
-from .models import RepresentativeAgenda, RepresentativeAgendaItem
+from .models import Programme, ProgrammeItem
 
 SECONDS_PER_DAY = 60 * 60 * 24
 
 
-class AgendaListView(ListView):
+class ProgrammeListView(ListView):
     """
-    Prehled jednani na zastupitelstvu v danem volebnim obdobi.
+    Prehled programu jednani na zastupitelstvu v danem volebnim obdobi.
     """
-    context_object_name = 'agendas'
-    template_name = 'events/agenda_list.html'
+    context_object_name = 'programmes'
+    template_name = 'municipal/programme_list.html'
 
     def get_queryset(self):
-        return RepresentativeAgenda.objects.all()
+        return Programme.objects.all()
 
     def get_context_data(self, **kwargs):
-        out = super(AgendaListView, self).get_context_data(**kwargs)
+        out = super(ProgrammeListView, self).get_context_data(**kwargs)
         out.update({
             'url_year_from': self.kwargs['year_from'],
             'url_year_to': self.kwargs['year_to'],
@@ -31,55 +31,55 @@ class AgendaListView(ListView):
         return out
 
 
-class AgendaDetailView(DetailView):
+class ProgrammeDetailView(DetailView):
     """
-    Detail jednani na zastupitelstvu.
+    Detail programu jednani na zastupitelstvu.
     """
-    context_object_name = 'agenda'
-    template_name = 'events/agenda_detail.html'
+    context_object_name = 'programme'
+    template_name = 'municipal/programme_detail.html'
 
     def get_queryset(self):
         self.term = get_object_or_404(Term, valid_from__year=int(self.kwargs['year_from']), \
                                  valid_to__year=int(self.kwargs['year_to']))
-        agenda = get_object_or_404(RepresentativeAgenda, term=self.term)
-        return agenda
+        programme = get_object_or_404(Programme, term=self.term)
+        return programme
 
     def get_context_data(self, **kwargs):
-        out = super(AgendaDetailView, self).get_context_data(**kwargs)
+        out = super(ProgrammeDetailView, self).get_context_data(**kwargs)
         out.update({
             'term': self.term,
             'url_year_from': self.kwargs['year_from'],
             'url_year_to': self.kwargs['year_to'],
-            'url_agenda': self.kwargs['agenda'],
+            'url_programme': self.kwargs['programme'],
         })
         return out
 
 
-class AgendaItemDetailView(DetailView):
+class ProgrammeItemDetailView(DetailView):
     """
-    Detail konkretniho bodu projednavaneho na zastupitelstvu.
+    Detail konkretniho bodu programu projednavaneho na zastupitelstvu.
     """
-    context_object_name = 'agenda_item'
-    template_name = 'events/agenda_item_detail.html'
+    context_object_name = 'programme_item'
+    template_name = 'municipal/programme_item_detail.html'
 
     def get_object(self, queryset=None):
         self.term = get_object_or_404(Term, valid_from__year=int(self.kwargs['year_from']), \
                                       valid_to__year=int(self.kwargs['year_to']))
-        self.agenda = get_object_or_404(RepresentativeAgenda, term=self.term, \
-                                        order=int(self.kwargs['agenda']))
-        item = get_object_or_404(RepresentativeAgendaItem, item=self.kwargs['item'], \
-                                 agenda=self.agenda)
+        self.programme = get_object_or_404(Programme, term=self.term, \
+                                           order=int(self.kwargs['programme']))
+        item = get_object_or_404(ProgrammeItem, item=self.kwargs['item'], \
+                                 programme=self.programme)
         return item
 
     def get_context_data(self, **kwargs):
-        out = super(AgendaItemDetailView, self).get_context_data(**kwargs)
-        delta = datetime.now() - self.object.agenda.date
+        out = super(ProgrammeItemDetailView, self).get_context_data(**kwargs)
+        delta = datetime.now() - self.object.programme.date
         out.update({
             'term': self.term,
-            'agenda': self.agenda,
+            'programme': self.programme,
             'url_year_from': self.kwargs['year_from'],
             'url_year_to': self.kwargs['year_to'],
-            'url_agenda': self.kwargs['agenda'],
+            'url_programme': self.kwargs['programme'],
             'url_item': self.kwargs['item'],
             'voting': self.object.get_voting_data(),
             'deep_history': delta.total_seconds() > SECONDS_PER_DAY * 10,

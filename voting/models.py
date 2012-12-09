@@ -20,7 +20,7 @@ class RepresentativeVoting(models.Model):
     Proto je treba mit mezi konkretnim bode a hlasem zastupitele tento
     model.
     """
-    item        = models.ForeignKey("events.RepresentativeAgendaItem", verbose_name=u'Bod na jednání zastupitelstva', related_name='voting')
+    item        = models.ForeignKey("municipal.ProgrammeItem", verbose_name=u'Bod na jednání zastupitelstva', related_name='voting')
     order       = models.IntegerField(u"Pořadí", default=1, help_text=u'Pokud se k bodu hlasuje vícekrát, jaké pořadové číslo mělo toto hlasování?.')
     description = models.TextField(u"Popis hlasování", blank=True, null=True, help_text=u'Pokud se k bodu hlasuje vícekrát, je třeba jednotlivé hlasování od sebe odlišit nějakým popisem o co šlo.')
     confused    = models.BooleanField(u"Zmatečné hlasování", default=False, help_text=u'Někdy se o hlasování prohlásí, že bylo zmatečné. Byl to tento případ?')
@@ -34,7 +34,7 @@ class RepresentativeVoting(models.Model):
 
     def __unicode__(self):
         description = self.description and self.description[:15] or u''
-        return u'%s %s' % (self.item, description)
+        return u'%s / %s' % (self.order, self.item)
 
 
 class RepresentativeVote(models.Model):
@@ -97,7 +97,7 @@ class PublicVote(models.Model):
     )
 
     ip      = models.GenericIPAddressField("IP adresa", blank=True, null=True)
-    item    = models.ForeignKey("events.RepresentativeAgendaItem", verbose_name=u'Bod na jednání zastupitelstva', related_name='pvotes')
+    item    = models.ForeignKey("municipal.ProgrammeItem", verbose_name=u'Bod na jednání zastupitelstva', related_name='pvotes')
     vote    = models.CharField(u'Hlas', max_length=1, choices=PUBLIC_VOTE_CHOICES)
     created = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
     updated = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)

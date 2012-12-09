@@ -27,19 +27,19 @@ class Party(models.Model):
         return self.short
 
 
-class Politician(models.Model):
+class Person(models.Model):
     """
-    Politik.
+    Clovek.
     """
     first_name = models.CharField(u'Jméno', max_length=20)
     last_name  = models.CharField(u'Příjmení', max_length=40)
-    photo      = models.ImageField(upload_to='photos')
+    photo      = models.ImageField(upload_to='photos', blank=True, null=True)
     created    = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
     updated    = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
 
     class Meta:
-        verbose_name = u'Politik'
-        verbose_name_plural = u'Politici'
+        verbose_name = u'Člověk'
+        verbose_name_plural = u'Lidé'
         ordering = ('last_name', )
 
     def __unicode__(self):
@@ -66,11 +66,11 @@ class Representative(PeriodModel):
     """
     Zastupitel.
     """
-    party      = models.ForeignKey(Party, verbose_name=u'Strana')
-    politician = models.ForeignKey(Politician, verbose_name=u'Politik')
-    term       = models.ForeignKey(Term, verbose_name=u'Volební období')
-    created    = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
-    updated    = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
+    party   = models.ForeignKey(Party, verbose_name=u'Strana')
+    person  = models.ForeignKey(Person, verbose_name=u'Člověk')
+    term    = models.ForeignKey(Term, verbose_name=u'Volební období')
+    created = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
+    updated = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
     # denormalizace
     dparty_short           = models.CharField(max_length=15, editable=False)
     dpolitician_first_name = models.CharField(max_length=20, editable=False)
@@ -82,12 +82,12 @@ class Representative(PeriodModel):
         ordering = ('dpolitician_last_name', '-valid_from')
 
     def __unicode__(self):
-        return unicode(self.politician)
+        return unicode(self.person)
 
     def save(self, *args, **kwargs):
         self.dparty_short = self.party.short
-        self.dpolitician_first_name = self.politician.first_name
-        self.dpolitician_last_name = self.politician.last_name
+        self.dpolitician_first_name = self.person.first_name
+        self.dpolitician_last_name = self.person.last_name
         return super(Representative, self).save(*args, **kwargs)
 
     def get_full_name(self):

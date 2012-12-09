@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Dulezite udalosti.
-
-Momentalne pouze bod jednani zastupitelstva. V budoucnu mozna i body z jednani
-rady, prip. dalsi verejne vystupy mesta (napr. Forum 2025, apod).
+TODO:
 """
 
 import math
@@ -19,9 +16,11 @@ from shared.utils import process_markdown, typotexy
 from voting.models import RepresentativeVote
 
 
-class RepresentativeAgenda(models.Model):
+# --- program -----------------------------------------------------------------
+
+class Programme(models.Model):
     """
-    Jednani zastupitelstva.
+    Program jednani zastupitelstva.
     """
     TYPE_ORDINARY = 'R'
     TYPE_EXTRAORDINARY = 'M'
@@ -29,6 +28,7 @@ class RepresentativeAgenda(models.Model):
         (TYPE_ORDINARY, u'Řádné'),
         (TYPE_EXTRAORDINARY, u'Mimořádné'),
     )
+    # TODO: stazen, pridan, verejne hlasovani
 
     order   = models.IntegerField(u'Pořadové číslo')
     type    = models.CharField(u'Typ jednání', max_length=1, choices=TYPE_CHOICES, default=TYPE_ORDINARY)
@@ -38,8 +38,8 @@ class RepresentativeAgenda(models.Model):
     updated = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
 
     class Meta:
-        verbose_name = u'Jednání zastupitelstva'
-        verbose_name_plural = u'Jednání zastupitelstev'
+        verbose_name = u'Program jednání zastupitelstva'
+        verbose_name_plural = u'Program jednání zastupitelstev'
         ordering = ('-term__valid_from', 'order')
 
     def __unicode__(self):
@@ -47,12 +47,12 @@ class RepresentativeAgenda(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('agenda-detail', [], {'year_from': self.term.valid_from.year, \
-                                      'year_to': self.term.valid_to.year, \
-                                      'agenda': self.order})
+        return ('programme-detail', [], {'year_from': self.term.valid_from.year, \
+                                         'year_to': self.term.valid_to.year, \
+                                         'programme': self.order})
 
 
-REPRESENTATIVE_DEFAULTS = {
+PROGRAMME_DEFAULT = {
     'data': SortedDict([
         (RepresentativeVote.REPRESENTATIVE_VOTE_YES, {
             'icon': 'icon-thumbs-up',
@@ -85,27 +85,32 @@ REPRESENTATIVE_DEFAULTS = {
     ])
 }
 
-class RepresentativeAgendaItem(models.Model):
+class ProgrammeItem(models.Model):
     """
-    Bod na jednani zastupitelstva.
+    Bod na programu jednani zastupitelstva.
     """
-    AGENDA_RESULT_YES = '+'
-    AGENDA_RESULT_NO  = '-'
-    AGENDA_RESULT_CONFUSED = '?'
-    AGENDA_RESULT_LABELS = {
-        AGENDA_RESULT_YES: u'Schváleno',
-        AGENDA_RESULT_NO: u'Neschváleno',
-        AGENDA_RESULT_CONFUSED: u'Zmatečné',
+    PROGRAMME_YES = '+'
+    PROGRAMME_NO  = '-'
+    PROGRAMME_CONFUSED = '?'
+    PROGRAMME_LABELS = {
+        PROGRAMME_YES: u'Schváleno',
+        PROGRAMME_NO: u'Neschváleno',
+        PROGRAMME_CONFUSED: u'Zmatečné',
     }
-    AGENDA_RESULT_ICONS = {
-        AGENDA_RESULT_YES: u'icon-thumbs-up',
-        AGENDA_RESULT_NO: u'icon-thumbs-down',
-        AGENDA_RESULT_CONFUSED: u'icon-question-sign',
+    DECISION_LABELS = {
+        PROGRAMME_YES: u'Přijatá',
+        PROGRAMME_NO: u'Nepřijatá',
+        PROGRAMME_CONFUSED: u'Nepřijatá',
     }
-    AGENDA_RESULT_CHOICES = (
-        (AGENDA_RESULT_YES, AGENDA_RESULT_LABELS[AGENDA_RESULT_YES]),
-        (AGENDA_RESULT_NO, AGENDA_RESULT_LABELS[AGENDA_RESULT_NO]),
-        (AGENDA_RESULT_CONFUSED, AGENDA_RESULT_LABELS[AGENDA_RESULT_CONFUSED]),
+    PROGRAMME_ICONS = {
+        PROGRAMME_YES: u'icon-thumbs-up',
+        PROGRAMME_NO: u'icon-thumbs-down',
+        PROGRAMME_CONFUSED: u'icon-question-sign',
+    }
+    PROGRAMME_CHOICES = (
+        (PROGRAMME_YES, PROGRAMME_LABELS[PROGRAMME_YES]),
+        (PROGRAMME_NO, PROGRAMME_LABELS[PROGRAMME_NO]),
+        (PROGRAMME_CONFUSED, PROGRAMME_LABELS[PROGRAMME_CONFUSED]),
     )
 
     item             = models.CharField(u'Číslo bodu', max_length=10)
@@ -113,32 +118,29 @@ class RepresentativeAgendaItem(models.Model):
     htitle           = models.CharField(u'Srozumitelný titulek', max_length=1000, blank=True, null=True)
     description_orig = models.TextField(u'Popis', blank=True, null=True)
     description      = models.TextField(editable=False, blank=True, null=True)
-    agenda           = models.ForeignKey(RepresentativeAgenda, verbose_name=u"Jednání zastupitelstva", related_name='items')
-    # denormalizace
-    # TODO:
-    #dvote            = models.CharField(editable=False, max_length=1, blank=True, null=True, choices=AGENDA_RESULT_CHOICES)
+    programme        = models.ForeignKey(Programme, verbose_name=u"Program jednání zastupitelstva", related_name='items')
     created          = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
     updated          = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
 
     class Meta:
-        verbose_name = u'Bod na jednání zastupitelstva'
-        verbose_name_plural = u'Body z jednání zastupitelstva'
+        verbose_name = u'Bod na programu jednání zastupitelstva'
+        verbose_name_plural = u'Body z programu jednání zastupitelstva'
         ordering = ('item', ) # TODO: item musim denormalizovat do cisla, klidne decimalu, a radit pak podle nej trebas
 
     def __unicode__(self):
-        return u'%s %s' % (self.agenda, self.item)
+        return u'%s %s' % (self.programme, self.item)
 
     @models.permalink
     def get_absolute_url(self):
-        term = self.agenda.term
-        return ('agenda-item-detail', [], {'year_from': term.valid_from.year, \
-                                           'year_to': term.valid_to.year, \
-                                           'agenda': self.agenda.order, \
-                                           'item': self.item})
+        term = self.programme.term
+        return ('programme-item-detail', [], {'year_from': term.valid_from.year, \
+                                              'year_to': term.valid_to.year, \
+                                              'programme': self.programme.order, \
+                                              'item': self.item})
 
     def save(self, *args, **kwargs):
         self.description = typotexy(process_markdown(self.description_orig))
-        return super(RepresentativeAgendaItem, self).save(*args, **kwargs)
+        return super(ProgrammeItem, self).save(*args, **kwargs)
 
     def get_voting_data(self):
         """
@@ -148,8 +150,8 @@ class RepresentativeAgendaItem(models.Model):
         # rozprcani zastupitelu do slovniku
         for voting in self.voting.all().order_by('order'):
             counter = 0
-            _item = deepcopy(REPRESENTATIVE_DEFAULTS)
-            for rvote in voting.rvote.all().order_by('representative__politician__last_name'):
+            _item = deepcopy(PROGRAMME_DEFAULT)
+            for rvote in voting.rvote.all().order_by('representative__person__last_name'):
                 _item['data'][rvote.vote]['representatives'].append(rvote.representative)
                 _item['data'][rvote.vote]['votes'] += 1
                 counter += 1
@@ -159,6 +161,7 @@ class RepresentativeAgendaItem(models.Model):
             _item['confused'] = voting.confused
             _item['description'] = voting.description
             _item['order'] = voting.order
+            _item['decisions'] = voting.decisions.all()
 
             # vypocet procent
             for k in _item['data']:
@@ -185,19 +188,20 @@ class RepresentativeAgendaItem(models.Model):
             limit = int(math.ceil(total / 2.0))
             win = [k for k in item if item[k]['votes'] >= limit]
             if voting[order]['confused']:
-                result = self.AGENDA_RESULT_CONFUSED
+                result = self.PROGRAMME_CONFUSED
             elif win and win[0] == RepresentativeVote.REPRESENTATIVE_VOTE_YES:
-                result = self.AGENDA_RESULT_YES
+                result = self.PROGRAMME_YES
             else:
-                result = self.AGENDA_RESULT_NO
+                result = self.PROGRAMME_NO
 
             out['data'][order] = {'result': result,
-                                  'result_bool': result == self.AGENDA_RESULT_YES,
+                                  'result_bool': result == self.PROGRAMME_YES,
                                   'limit': limit,
                                   'total': total,
-                                  'tightly': result==self.AGENDA_RESULT_YES and item[win[0]]['votes'] <= limit + 2,
-                                  'icon': self.AGENDA_RESULT_ICONS[result],
-                                  'label': self.AGENDA_RESULT_LABELS[result],
+                                  'tightly': result==self.PROGRAMME_YES and item[win[0]]['votes'] <= limit + 2,
+                                  'icon': self.PROGRAMME_ICONS[result],
+                                  'label': self.PROGRAMME_LABELS[result],
+                                  'decision_label': self.DECISION_LABELS[result],
                                   'confused': voting[order]['confused'],
                                   'description': voting[order]['description'],
                                   'order': voting[order]['order']}
@@ -209,3 +213,32 @@ class RepresentativeAgendaItem(models.Model):
         out['multiple_icon'] = 'icon-reorder'
 
         return out
+
+
+# --- usneseni ----------------------------------------------------------------
+
+class Decision(models.Model):
+    """
+    Usneseni.
+    """
+    code             = models.CharField(u'Kód usnesení', max_length=10)
+    title            = models.CharField(u'Titulek', max_length=2000)
+    description_orig = models.TextField(u'Popis')
+    description      = models.TextField(editable=False, blank=True, null=True)
+    voting           = models.ForeignKey('voting.RepresentativeVoting', verbose_name=u"Hlasování k bodu programu", related_name='decisions')
+    term             = models.CharField(u'Termín', max_length=50, blank=True, null=True)
+    responsibles     = models.ManyToManyField('authority.Person', verbose_name=u"Zodpovědné osoby", related_name="decisions")
+    created          = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
+    updated          = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
+
+    class Meta:
+        verbose_name = u'Usnesení'
+        verbose_name_plural = u'Usnesení'
+        ordering = ('code', )
+
+    def __unicode__(self):
+        return u'%s %s' % (self.code, self.voting)
+
+    def save(self, *args, **kwargs):
+        self.description = typotexy(process_markdown(self.description_orig))
+        return super(Decision, self).save(*args, **kwargs)

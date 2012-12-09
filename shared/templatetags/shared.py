@@ -43,8 +43,6 @@ def grammar(count, variants):
 
 @register.filter
 def key(item, key):
-    print item
-    print key
     return item.get(key, None)
 
 

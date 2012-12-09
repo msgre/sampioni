@@ -126,9 +126,10 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'shared',
     'authority',
-    'events',
+    #'events',
+    'municipal',
     'voting',
-    'comments',
+    #'comments',
 )
 
 # A sample logging configuration. The only tangible logging
