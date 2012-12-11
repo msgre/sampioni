@@ -5,15 +5,30 @@
 
 {% block page_title %}
     {# lidsky srozumitelny titulek #}
-    <h1{% if not programme_item.htitle%} class="{% if programme_item.title|length > 200 %}tiny{% elif programme_item.title|length > 110 %}small{% endif %}"{% endif %}>
-        {% if programme_item.htitle %}
-            {{ programme_item.item }}.&nbsp;{{ programme_item.htitle }}
-        {% else %}
-            <span>{{ programme_item.item }}.&nbsp;{{ programme_item.title }}</span>
-            <br /><small>Srozumitelný název tohoto bodu ještě nikdo nenavrhl… &nbsp;
-            <a href="#" class="btn">Zkuste to Vy!</a></small>
-        {% endif %}
-    </h1>
+    <section class="" id="promo">
+        <div class="carousel slide" id="myCarousel">
+            <!-- Carousel items -->
+            <div class="carousel-inner">
+                <div class="active item">
+                    <div class="row-fluid">
+                        <h1{% if not programme_item.htitle%} class="{% if programme_item.title|length > 200 %}tiny{% elif programme_item.title|length > 110 %}small{% endif %}"{% endif %}>
+                            {% if programme_item.htitle %}
+                                {{ programme_item.item }}.&nbsp;{{ programme_item.htitle }}
+                            {% else %}
+                                <span>{{ programme_item.item }}.&nbsp;{{ programme_item.title }}</span>
+                                <br /><small>Srozumitelný název tohoto bodu ještě nikdo nenavrhl… &nbsp;
+                                <a href="#navrh-titulku" role="button" class="btn" data-toggle="modal">Zkuste to Vy!</a></small>
+                            {% endif %}
+                        </h1>
+                    </div>
+                </div>
+            </div>
+            {% variable programme_item.get_next as next_item %}
+            {% variable programme_item.get_prev as prev_item %}
+            {% if prev_item %}<a class="carousel-control left" title="Předchozí bod programu – {{ prev_item.item }}" href="{{ prev_item.get_absolute_url }}">‹</a>{% endif %}
+            {% if next_item %}<a class="carousel-control right" title="Další bod programu – {{ next_item.item }}" href="{{ next_item.get_absolute_url }}">›</a>{% endif %}
+        </div>
+    </section>
 {% endblock %}
 
 {% block page_left %}
@@ -33,7 +48,7 @@
         {{ programme_item.description|safe }}
     {% else %}
         <p><em>Popis tohoto bodu ještě nikdo nesepsal.</em></p>
-        <p><a href="#" class="btn">Troufnete si?</a></p>
+        <p><a href="#navrh-popisu" role="button" class="btn" data-toggle="modal">Troufnete si?</a></p>
     {% endif %}
 
     {% comment %}
@@ -44,14 +59,6 @@
        <li><strong>TODO</strong></li>
     </ol>
     {% endcomment %}
-
-    {% variable programme_item.get_next as next_item %}
-    {% variable programme_item.get_prev as prev_item %}
-    <ul class="pager">
-        {% if prev_item %}<li{# class="previous"#}><a href="{{ prev_item.get_absolute_url }}">&larr; Předchozí bod <strong>{{ prev_item.item }}</strong></a></li>{% endif %}
-        <li><a href="#">Vybrat bod ze seznamu</a></li>
-        {% if next_item %}<li{# class="next"#}><a href="{{ next_item.get_absolute_url }}">Následující bod <strong>{{ next_item.item }}</strong> &rarr;</a></li>{% endif %}
-    </ul>
 {% endblock %}
 
 {% block page_right %}
@@ -245,4 +252,62 @@
             </div>{# /hlasovani #}
         {% endfor %}
     </div>{# /obsahy tabu#}
+
+    {# ============ modalni okna ======================== #}
+
+    {# modalni okno pro nacrh srozumitelneho titulku #}
+    <div id="navrh-titulku" class="modal hide" role="dialog" aria-labelledby="navrh-titulku-label" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="navrh-titulku-label">Návrh srozumitelného titulku</h3>
+        </div>
+        <form method="post" action="{% url programme-htitle year_from=url_year_from year_to=url_year_to programme=url_programme item=url_item %}">
+            {% csrf_token %}
+            <div class="modal-body">
+                <label>Oficiální název bodu:</label>
+                <p><em>{{ programme_item.title }}</em></p>
+                {{ htitle_form }}
+                <p></p>
+                <p><a href="#"><i class="icon-info-sign icon-white"></i> Proč je důležité navrhovat alternativní titulky?</a></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Zavřít</button>
+                <button class="btn btn-primary">Navrhnout</button>
+            </div>
+        </form>
+    </div>
+
+    {# modalni okno pro nacrh srozumitelneho titulku #}
+    <div id="navrh-popisu" class="modal hide" role="dialog" aria-labelledby="navrh-popisu-label" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="navrh-popisu-label">Návrh popisu</h3>
+        </div>
+        <form method="post" action="{% url programme-hdescription year_from=url_year_from year_to=url_year_to programme=url_programme item=url_item %}">
+            {% csrf_token %}
+            <div class="modal-body">
+                {{ hdescription_form }}
+                <p></p>
+                <p><a href="#"><i class="icon-info-sign icon-white"></i> Proč je třeba body popisovat?</a></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Zavřít</button>
+                <button class="btn btn-primary">Navrhnout</button>
+            </div>
+        </form>
+    </div>
+
+    <script type="text/javascript">
+        {# focus na policka po otevreni modalniho okna #}
+        $(document).ready(function(){
+            var $modalPopis = $('#navrh-popisu'),
+                $modalTitulek = $('#navrh-titulku');
+            $modalPopis.on('shown', function () {
+                $modalPopis.find('textarea:first').focus()
+            });
+            $modalTitulek.on('shown', function () {
+                $modalTitulek.find('textarea:first').focus()
+            });
+        });
+    </script>
 {% endblock %}

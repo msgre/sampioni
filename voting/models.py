@@ -103,8 +103,8 @@ class PublicVote(models.Model):
     updated = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
 
     class Meta:
-        verbose_name = u'Hlas lidu'
-        verbose_name_plural = u'Hlasy lidu'
+        verbose_name = u'Hlas veřejnosti'
+        verbose_name_plural = u'Hlasy veřejnosti'
         ordering = ('-created',)
 
     def __unicode__(self):

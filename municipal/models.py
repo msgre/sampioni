@@ -154,16 +154,18 @@ class ProgrammeItem(models.Model):
         Prevadi atribut item (treba ve tvaru 1.2) do normalizovaneho tvaru
         (001-003).
         """
-        return '-'.join(["%03i" % int(i) for i in NUMBERS_RE.findall(self.item)])
+        orders = ["%03i" % int(i) for i in NUMBERS_RE.findall(self.item)]
+        orders.extend((5-len(orders))*["%03i" % 0])
+        return '-'.join(orders)
 
     def get_next(self):
         qs = ProgrammeItem.objects.filter(programme=self.programme, \
-                                          item__gt=self.item).order_by('ditem')
+                                          ditem__gt=self.ditem).order_by('ditem')
         return qs[0] if qs.exists() else None
 
     def get_prev(self):
         qs = ProgrammeItem.objects.filter(programme=self.programme, \
-                                          item__lt=self.item).order_by('-ditem')
+                                          ditem__lt=self.ditem).order_by('-ditem')
         return qs[0] if qs.exists() else None
 
     def get_voting_data(self):
@@ -239,6 +241,44 @@ class ProgrammeItem(models.Model):
         return out
 
 
+class ProgrammeHTitle(models.Model):
+    """
+    Navrhy srozumitelnych titulku k bodum programu.
+    """
+    htitle  = models.CharField(u'Srozumitelný titulek', max_length=1000)
+    item    = models.ForeignKey(ProgrammeItem, verbose_name=u'Bod na programu jednání zastupitelstva', related_name='htitle_suggestions')
+    created = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
+    updated = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
+# TODO: vazba na navrhovatele
+
+    class Meta:
+        verbose_name = u'Návrh srozumitelného titulku'
+        verbose_name_plural = u'Návrhy srozumitelných titulků'
+        ordering = ('-created', )
+
+    def __unicode__(self):
+        return u'%s %s' % (self.htitle, self.item)
+
+
+class ProgrammeHDescription(models.Model):
+    """
+    Navrhy obsahu bodu programu.
+    """
+    hdescription = models.TextField(u"Srozumitelný popis")
+    item         = models.ForeignKey(ProgrammeItem, verbose_name=u'Bod na programu jednání zastupitelstva', related_name='hdescription_suggestions')
+    created      = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
+    updated      = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
+# TODO: vazba na navrhovatele
+
+    class Meta:
+        verbose_name = u'Návrh srozumitelného obsahu'
+        verbose_name_plural = u'Návrhy srozumitelných obsahů'
+        ordering = ('-created', )
+
+    def __unicode__(self):
+        return u'%s %s' % (self.hdescription[:20], self.item)
+
+
 # --- usneseni ----------------------------------------------------------------
 
 class Decision(models.Model):
@@ -250,7 +290,7 @@ class Decision(models.Model):
     description_orig = models.TextField(u'Popis')
     description      = models.TextField(editable=False, blank=True, null=True)
     voting           = models.ForeignKey('voting.RepresentativeVoting', verbose_name=u"Hlasování k bodu programu", related_name='decisions')
-    term             = models.CharField(u'Termín', max_length=50, blank=True, null=True)
+    term             = models.CharField(u'Termín', max_length=50, default="Ihned", blank=True, null=True)
     responsibles     = models.ManyToManyField('authority.Person', verbose_name=u"Zodpovědné osoby", related_name="decisions", blank=True, null=True)
     created          = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
     updated          = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
