@@ -27,8 +27,8 @@ class RepresentativeVoteInlineForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(RepresentativeVoteInlineForm, self).__init__(*args, **kwargs)
         choices = self.fields['vote'].choices[1:]
+        self.fields['vote'].choices = choices
         self.fields['vote'].widget = InlineRadioSelect(choices=choices)
-        self.fields['vote'].initial = RepresentativeVote.REPRESENTATIVE_VOTE_YES
 
         # predvyplneni zastupitele podle poradoveho cisla policka v inlajnu
         idx = kwargs.get('prefix', '').split('-')
