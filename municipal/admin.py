@@ -9,14 +9,16 @@ from .models import Programme, ProgrammeItem, Decision
 class ProgrammeItemInline(admin.TabularInline):
     extra = 40
     model = ProgrammeItem
-    fields = ('item', 'title')
+    fields = ('item', 'title', )
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         """
         Titulek jako textarea (bo ti urednici nemaji soudnost).
         """
-        if db_field.name == 'title':
-            return forms.CharField(label=db_field.verbose_name, widget=forms.Textarea(attrs={'rows': '4', 'style': 'width:90%'}))
+        if db_field.name == 'item':
+            return forms.CharField(label=db_field.verbose_name, widget=forms.TextInput(attrs={'class': 'span2'}))
+        elif db_field.name == 'title':
+            return forms.CharField(label=db_field.verbose_name, widget=forms.Textarea(attrs={'rows': '4', 'class':'span10'}))
         return super(ProgrammeItemInline, self).formfield_for_dbfield(db_field, **kwargs)
 
 

@@ -21,7 +21,7 @@ class RepresentativeVoting(models.Model):
     model.
     """
     item        = models.ForeignKey("municipal.ProgrammeItem", verbose_name=u'Bod na jednání zastupitelstva', related_name='voting')
-    order       = models.IntegerField(u"Pořadí", default=1, help_text=u'Pokud se k bodu hlasuje vícekrát, jaké pořadové číslo mělo toto hlasování?.')
+    order       = models.IntegerField(u"Pořadové číslo", default=1, help_text=u'Pokud se k bodu hlasuje vícekrát, jaké pořadové číslo mělo toto hlasování?.')
     description = models.TextField(u"Popis hlasování", blank=True, null=True, help_text=u'Pokud se k bodu hlasuje vícekrát, je třeba jednotlivé hlasování od sebe odlišit nějakým popisem o co šlo.')
     confused    = models.BooleanField(u"Zmatečné hlasování", default=False, help_text=u'Někdy se o hlasování prohlásí, že bylo zmatečné. Byl to tento případ?')
     created     = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
