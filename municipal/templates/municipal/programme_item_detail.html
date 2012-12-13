@@ -44,12 +44,23 @@
     </header>
 
     {# popis bodu #}
-    {% if programme_item.description %}
-        {{ programme_item.description|safe }}
-    {% else %}
-        <p><em>Popis tohoto bodu ještě nikdo nesepsal.</em></p>
-        <p><a href="#navrh-popisu" role="button" class="btn" data-toggle="modal">Troufnete si?</a></p>
-    {% endif %}
+    <ul id="description-tab" class="nav nav-tabs">
+        <li class="active"><a href="#popis" data-toggle="tab">Popis bodu</a></li>
+        <li><a href="#komentare" data-toggle="tab">Komentáře</a></li>
+    </ul>
+    <div id="description=tab=content" class="tab-content">
+        <div class="tab-pane fade in active" id="popis">
+            {% if programme_item.description %}
+                {{ programme_item.description|safe }}
+            {% else %}
+                <p><em>Popis tohoto bodu ještě nikdo nesepsal.</em></p>
+                <p><a href="#navrh-popisu" role="button" class="btn" data-toggle="modal">Troufnete si?</a></p>
+            {% endif %}
+        </div>
+        <div class="tab-pane fade" id="komentare">
+            <p>TODO:</p>
+        </div>
+    </div>
 
     {% comment %}
     TODO: seznam dotazu "Nerozumim"

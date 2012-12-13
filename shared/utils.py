@@ -80,3 +80,11 @@ def process_markdown(data):
     _data = bleach.clean(data, tags=[], strip=True)
     html = markdown.markdown(_data, safe_mode='remove', enable_attributes=False)
     return bleach.linkify(html, callbacks=[just_http_links])
+
+
+
+WHITECHARS_RE = re.compile(r'\s+')
+
+def replace_multiple_whitechars(data):
+    "Nahradi posloupnost bilych znaku za jedinou mezeru."
+    return WHITECHARS_RE.sub(u' ', data).strip()

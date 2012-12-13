@@ -4,7 +4,7 @@ from django import forms
 from django.contrib import admin
 
 from .models import RepresentativeVoting, RepresentativeVote, PublicVote
-from .forms import RepresentativeVoteInlineForm
+from .forms import RepresentativeVoteInlineForm, DecisionInlineForm
 from municipal.models import Decision
 
 
@@ -17,6 +17,7 @@ class RepresentativeVoteInline(admin.TabularInline):
 class DecisionInline(admin.StackedInline):
     extra = 0
     model = Decision
+    form = DecisionInlineForm
 
 class RepresentativeVotingAdmin(admin.ModelAdmin):
     inlines = [

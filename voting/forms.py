@@ -4,6 +4,8 @@ from django import forms
 from django.utils.safestring import mark_safe
 
 from authority.models import Representative
+from shared.utils import replace_multiple_whitechars
+from municipal.models import Decision
 from .models import RepresentativeVote
 
 
@@ -37,3 +39,12 @@ class RepresentativeVoteInlineForm(forms.ModelForm):
         if idx is not None and int(idx) < len(r):
             idx = int(idx)
             self.fields['representative'].initial = r[idx].id
+
+
+class DecisionInlineForm(forms.ModelForm):
+    class Meta:
+        model = Decision
+
+    def clean_title(self):
+        out = replace_multiple_whitechars(self.cleaned_data.get('title', u''))
+        return out

@@ -2,14 +2,11 @@
 # vim: set et si ts=4 sw=4:
 
 from django import forms
+from django.utils.safestring import mark_safe
 
-from .models import ProgrammeHTitle, ProgrammeHDescription
+from shared.utils import replace_multiple_whitechars
+from .models import ProgrammeHTitle, ProgrammeHDescription, ProgrammeItem
 
-
-"""
-TODO:
-- nezobecnim to v nejakou spolecnou form tridu?
-"""
 
 class ProgrammeHTitleForm(forms.ModelForm):
     """
@@ -55,3 +52,22 @@ class ProgrammeHDescriptionForm(forms.ModelForm):
         obj = ProgrammeHDescription.objects.create(hdescription=self.cleaned_data['hdescription'], \
                                                    item=self.item)
         return obj
+
+
+class ProgrammeItemInlineForm(forms.ModelForm):
+    class Meta:
+        model = ProgrammeItem
+        fields = ('item', 'title', )
+
+    def __init__(self, *args, **kwargs):
+        super(ProgrammeItemInlineForm, self).__init__(*args, **kwargs)
+        self.fields['item'].widget = forms.TextInput(attrs={'class': 'span2'})
+        self.fields['title'].widget = forms.Textarea(attrs={'rows': '4', 'class':'span12'})
+
+    def clean_item(self):
+        out = replace_multiple_whitechars(self.cleaned_data.get('item', u''))
+        return out
+
+    def clean_title(self):
+        out = replace_multiple_whitechars(self.cleaned_data.get('title', u''))
+        return out

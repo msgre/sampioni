@@ -4,23 +4,13 @@ from django.contrib import admin
 from django import forms
 
 from .models import Programme, ProgrammeItem, Decision
+from .forms import ProgrammeItemInlineForm
 
 
 class ProgrammeItemInline(admin.TabularInline):
     extra = 40
     model = ProgrammeItem
-    fields = ('item', 'title', )
-
-    def formfield_for_dbfield(self, db_field, **kwargs):
-        """
-        Titulek jako textarea (bo ti urednici nemaji soudnost).
-        """
-        if db_field.name == 'item':
-            return forms.CharField(label=db_field.verbose_name, widget=forms.TextInput(attrs={'class': 'span2'}))
-        elif db_field.name == 'title':
-            return forms.CharField(label=db_field.verbose_name, widget=forms.Textarea(attrs={'rows': '4', 'class':'span10'}))
-        return super(ProgrammeItemInline, self).formfield_for_dbfield(db_field, **kwargs)
-
+    form = ProgrammeItemInlineForm
 
 class ProgrammeAdmin(admin.ModelAdmin):
     inlines = [

@@ -155,7 +155,7 @@ class ProgrammeItem(models.Model):
         (001-003).
         """
         orders = ["%03i" % int(i) for i in NUMBERS_RE.findall(self.item)]
-        orders.extend((5-len(orders))*["%03i" % 0])
+        #orders.extend((5-len(orders))*["%03i" % 0])
         return '-'.join(orders)
 
     def get_next(self):
