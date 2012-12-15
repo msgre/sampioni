@@ -16,6 +16,13 @@ class ProgrammeAdmin(admin.ModelAdmin):
     inlines = [
         ProgrammeItemInline,
     ]
+    list_display = ('display_order', 'term', 'type', 'date')
+    list_filter = ('term', 'type')
+
+    def display_order(self, obj):
+        return u'%s. zastupitelstvo' % obj.order
+    display_order.short_description = u'Pořadové číslo'
+    display_order.admin_order_field = 'order'
 
 
 admin.site.register(Programme, ProgrammeAdmin)

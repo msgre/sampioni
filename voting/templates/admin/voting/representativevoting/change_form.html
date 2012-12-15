@@ -1,0 +1,77 @@
+{% extends "admin/change_form.html" %}
+
+{% block object-tools %}
+
+    {{ block.super }}
+    <div class="pull-right">
+        <button data-controls-modal="parsovat" data-backdrop="true" data-keyboard="true" class="btn">Parsovat</button>
+    </div>
+
+    {# modalni okno #}
+    <div id="parsovat" class="modal hide">
+        <form action="../parse/" method="post">
+            {% csrf_token %}
+            <div class="modal-header">
+                <a href="#" class="close">&times;</a>
+                <h3 id="parsovat-label">Parser výsledků hlasování</h3>
+            </div>
+            <div class="modal-body">
+                <textarea style="font-family:monospace; font-size:12px;" rows="15" name="voting-content" id="voting-content_id" class="span9"></textarea>
+                <p class="errors"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn primary">Parsovat</button>
+            </div>
+        </form>
+    </div>
+
+    {# dotazeni javasracu #}
+    <script type="text/javascript" src="{{ STATIC_URL }}admintools_bootstrap/js/bootstrap-modal.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#parsovat form').submit(function(){
+                // TODO: obsluha submitu
+                var $form = $(this);
+                $.post($form.attr('action'), $form.serialize(), function(data, textStatus, jqXHR){
+                    if (textStatus == 'success') {
+                        if (data.error) {
+                            $('#parsovat .errors').empty().text(data.errors);
+                        }
+                        else {
+                            $term = $('#id_term');
+                            $term.find('option:selected').removeAttr('selected');
+                            $term.find('option[value="'+data['term']+'"]').attr('selected', 'selected');
+                            $term.trigger("liszt:updated");
+
+                            $('#id_programme_order').val(data['programme_order']);
+                            $('#id_item_number').val(data['item_number']);
+                            $('#id_order').val(data['order']);
+                            $('#id_description').val(data['description']);
+                            $confused = $('#id_confused');
+                            if (data['confused']) $confused.attr('checked', 'checked');
+                            else $confused.removeAttr('checked');
+
+                            // hlasovani zastupitelu
+                            var rows = $('#rvote-group tbody tr').length - 1;
+                            for (var i=0; i<rows; i++){
+                                var $rvote = $('#rvote-'+i),
+                                    $representative = $rvote.find('#id_rvote-'+i+'-representative'),
+                                    $vote = $rvote.find('[name="rvote-'+i+'-vote"]'),
+                                    vote = data['voting'][$representative.find('option:selected').val()];
+
+                                    $vote.filter('[value="'+vote+'"]').attr('checked', 'checked');
+                            }
+
+                            // zavreme modalni okno
+                            $('#parsovat').modal('hide');
+                        }
+                    }
+                    else {
+                        $('#parsovat .errors').empty().text('Nějaká chyba na serveru');
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+{% endblock %}

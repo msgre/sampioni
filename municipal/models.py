@@ -13,7 +13,7 @@ from django.utils.dateformat import DateFormat
 from django.conf import settings
 from django.utils.datastructures import SortedDict
 
-from shared.utils import process_markdown, typotexy
+from shared.utils import process_markdown, typotexy, replace_multiple_whitechars
 from voting.models import RepresentativeVote
 
 
@@ -44,7 +44,7 @@ class Programme(models.Model):
         ordering = ('-term__valid_from', 'order')
 
     def __unicode__(self):
-        return u'%s %s' % (self.order, self.get_type_display())
+        return u'%s. %s, %s' % (self.order, self.get_type_display(), self.term)
 
     @models.permalink
     def get_absolute_url(self):
@@ -69,15 +69,22 @@ PROGRAMME_DEFAULT = {
             'votes_perc': 0,
             'representatives': []
         }),
-        (RepresentativeVote.REPRESENTATIVE_VOTE_NOTHING, {
+        (RepresentativeVote.REPRESENTATIVE_VOTE_ABSTAIN, {
             'icon': 'icon-question-sign',
-            'label': RepresentativeVote.REPRESENTATIVE_VOTE_LABELS[RepresentativeVote.REPRESENTATIVE_VOTE_NOTHING],
+            'label': RepresentativeVote.REPRESENTATIVE_VOTE_LABELS[RepresentativeVote.REPRESENTATIVE_VOTE_ABSTAIN],
+            'votes': 0,
+            'votes_perc': 0,
+            'representatives': []
+        }),
+        (RepresentativeVote.REPRESENTATIVE_VOTE_NOVOTE, {
+            'icon': 'icon-remove-circle',
+            'label': RepresentativeVote.REPRESENTATIVE_VOTE_LABELS[RepresentativeVote.REPRESENTATIVE_VOTE_NOVOTE],
             'votes': 0,
             'votes_perc': 0,
             'representatives': []
         }),
         (RepresentativeVote.REPRESENTATIVE_VOTE_MISSING, {
-            'icon': 'icon-remove-circle',
+            'icon': 'icon-globe',
             'label': RepresentativeVote.REPRESENTATIVE_VOTE_LABELS[RepresentativeVote.REPRESENTATIVE_VOTE_MISSING],
             'votes': 0,
             'votes_perc': 0,
@@ -134,7 +141,7 @@ class ProgrammeItem(models.Model):
         ordering = ('ditem', )
 
     def __unicode__(self):
-        return u'%s %s' % (self.programme, self.item)
+        return u'%s, bod %s' % (self.programme, self.item)
 
     @models.permalink
     def get_absolute_url(self):
@@ -204,7 +211,7 @@ class ProgrammeItem(models.Model):
         if not voting:
             return None
 
-        out = {'data': {}}
+        out = {'data': SortedDict()}
         for order in voting:
             if not voting[order] or not voting[order]['data']:
                 continue
@@ -239,6 +246,15 @@ class ProgrammeItem(models.Model):
         out['multiple_icon'] = 'icon-reorder'
 
         return out
+
+    @staticmethod
+    def normalize_item(item):
+        out = replace_multiple_whitechars(item)
+        return out.replace(' ', '').rstrip('.')
+
+    @staticmethod
+    def normalize_title(title):
+        return replace_multiple_whitechars(title)
 
 
 class ProgrammeHTitle(models.Model):
@@ -306,3 +322,7 @@ class Decision(models.Model):
     def save(self, *args, **kwargs):
         self.description = typotexy(process_markdown(self.description_orig))
         return super(Decision, self).save(*args, **kwargs)
+
+    @staticmethod
+    def normalize_title(title):
+        return replace_multiple_whitechars(title)

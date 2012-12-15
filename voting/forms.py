@@ -3,10 +3,9 @@
 from django import forms
 from django.utils.safestring import mark_safe
 
-from authority.models import Representative
-from shared.utils import replace_multiple_whitechars
-from municipal.models import Decision
-from .models import RepresentativeVote
+from authority.models import Representative, Term
+from municipal.models import Decision, ProgrammeItem, Programme
+from .models import RepresentativeVote, RepresentativeVoting
 
 
 class InlineRadioSelect(forms.RadioSelect):
@@ -41,10 +40,42 @@ class RepresentativeVoteInlineForm(forms.ModelForm):
             self.fields['representative'].initial = r[idx].id
 
 
+class RepresentativeVotingForm(forms.ModelForm):
+    term = forms.ChoiceField(label=u"Volební období")
+    programme_order = forms.CharField(label=u"Číslo programu")
+    item_number = forms.CharField(label=u"Bod programu")
+
+    class Meta:
+        model = RepresentativeVoting
+        exclude = ('item', )
+
+    def __init__(self, *args, **kwargs):
+        super(RepresentativeVotingForm, self).__init__(*args, **kwargs)
+        self.fields['order'].widget = forms.TextInput(attrs={'class': 'span1'})
+        self.fields['term'].choices = [(i.id, unicode(i)) for i in Term.objects.all()]
+        self.fields['term'].widget = forms.Select(choices=self.fields['term'].choices, \
+                                                  attrs={'class': 'span6'})
+        if self.instance:
+            self.fields['term'].initial = self.instance.item.programme.term.id
+            self.fields['programme_order'].initial = self.instance.item.programme.order
+            self.fields['item_number'].initial = self.instance.item.item
+
+    def clean(self):
+        data = self.cleaned_data.copy()
+
+        # 3 policka ve formiku mi definuji konkretni bod programu
+        term = Term.objects.get(id=int(data.pop('term')))
+        programme = Programme.objects.get(term=term, order=data.pop('programme_order'))
+        item = ProgrammeItem.objects.get(programme=programme, item=data.pop('item_number'))
+        data['item'] = item.id
+        self.cleaned_data['item'] = item.id
+
+        return data
+
+
 class DecisionInlineForm(forms.ModelForm):
     class Meta:
         model = Decision
 
     def clean_title(self):
-        out = replace_multiple_whitechars(self.cleaned_data.get('title', u''))
-        return out
+        return Decision.normalize_title(self.cleaned_data.get('title', u''))

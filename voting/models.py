@@ -21,7 +21,7 @@ class RepresentativeVoting(models.Model):
     model.
     """
     item        = models.ForeignKey("municipal.ProgrammeItem", verbose_name=u'Bod na jednání zastupitelstva', related_name='voting')
-    order       = models.IntegerField(u"Pořadové číslo", default=1, help_text=u'Pokud se k bodu hlasuje vícekrát, jaké pořadové číslo mělo toto hlasování?.')
+    order       = models.IntegerField(u"Číslo hlasování", default=1)
     description = models.TextField(u"Popis hlasování", blank=True, null=True, help_text=u'Pokud se k bodu hlasuje vícekrát, je třeba jednotlivé hlasování od sebe odlišit nějakým popisem o co šlo.')
     confused    = models.BooleanField(u"Zmatečné hlasování", default=False, help_text=u'Někdy se o hlasování prohlásí, že bylo zmatečné. Byl to tento případ?')
     created     = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
@@ -43,18 +43,21 @@ class RepresentativeVote(models.Model):
     """
     REPRESENTATIVE_VOTE_YES     = u'+'
     REPRESENTATIVE_VOTE_NO      = u'-'
-    REPRESENTATIVE_VOTE_NOTHING = u'0'
-    REPRESENTATIVE_VOTE_MISSING = u'X'
+    REPRESENTATIVE_VOTE_ABSTAIN = u'0'
+    REPRESENTATIVE_VOTE_NOVOTE  = u'X'
+    REPRESENTATIVE_VOTE_MISSING = u'.'
     REPRESENTATIVE_VOTE_LABELS = {
         REPRESENTATIVE_VOTE_YES: u'Pro',
         REPRESENTATIVE_VOTE_NO: u'Proti',
-        REPRESENTATIVE_VOTE_NOTHING: u'Zdržel se',
-        REPRESENTATIVE_VOTE_MISSING: u'Nehlasoval',
+        REPRESENTATIVE_VOTE_ABSTAIN: u'Zdržel se',
+        REPRESENTATIVE_VOTE_NOVOTE: u'Nehlasoval',
+        REPRESENTATIVE_VOTE_MISSING: u'Nepřítomen',
     }
     REPRESENTATIVE_VOTE_CHOICES = (
         (REPRESENTATIVE_VOTE_YES, REPRESENTATIVE_VOTE_LABELS[REPRESENTATIVE_VOTE_YES]),
         (REPRESENTATIVE_VOTE_NO, REPRESENTATIVE_VOTE_LABELS[REPRESENTATIVE_VOTE_NO]),
-        (REPRESENTATIVE_VOTE_NOTHING, REPRESENTATIVE_VOTE_LABELS[REPRESENTATIVE_VOTE_NOTHING]),
+        (REPRESENTATIVE_VOTE_ABSTAIN, REPRESENTATIVE_VOTE_LABELS[REPRESENTATIVE_VOTE_ABSTAIN]),
+        (REPRESENTATIVE_VOTE_NOVOTE, REPRESENTATIVE_VOTE_LABELS[REPRESENTATIVE_VOTE_NOVOTE]),
         (REPRESENTATIVE_VOTE_MISSING, REPRESENTATIVE_VOTE_LABELS[REPRESENTATIVE_VOTE_MISSING]),
     )
 
@@ -83,6 +86,17 @@ class RepresentativeVote(models.Model):
         self.dpolitician_first_name = self.representative.dpolitician_first_name
         self.dpolitician_last_name = self.representative.dpolitician_last_name
         return super(RepresentativeVote, self).save(*args, **kwargs)
+
+    @staticmethod
+    def parse(data):
+        """
+        TODO:
+        """
+        data = data.strip().lower()
+        for k, v in RepresentativeVote.REPRESENTATIVE_VOTE_LABELS.iteritems():
+            if v.lower() == data:
+                return k
+        return None
 
 
 class PublicVote(models.Model):

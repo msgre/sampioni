@@ -46,6 +46,22 @@ class Person(models.Model):
         return u'%s %s' % (self.first_name, self.last_name)
 
 
+class PersonSynonym(models.Model):
+    """
+    Alternativni pojmenovani cloveka.
+    """
+    nick   = models.CharField(u'Synonymum', max_length=100)
+    person = models.ForeignKey(Person, verbose_name=u'Člověk', related_name='synonymous', null=True, blank=True)
+
+    class Meta:
+        verbose_name = u'Alternativní pojmenování člověka'
+        verbose_name_plural = u'Alternativní pojmenování člověka'
+        ordering = ('person', 'nick', )
+
+    def __unicode__(self):
+        return u'%s: %s' % (self.nick, self.person)
+
+
 class Term(PeriodModel):
     """
     Volebni obdobi.
@@ -67,7 +83,7 @@ class Representative(PeriodModel):
     Zastupitel.
     """
     party   = models.ForeignKey(Party, verbose_name=u'Strana')
-    person  = models.ForeignKey(Person, verbose_name=u'Člověk')
+    person  = models.ForeignKey(Person, verbose_name=u'Člověk', related_name='representatives')
     term    = models.ForeignKey(Term, verbose_name=u'Volební období')
     created = models.DateTimeField(u"Datum vytvoření", auto_now_add=True)
     updated = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
