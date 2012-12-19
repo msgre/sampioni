@@ -65,37 +65,38 @@ class RepresentativeVotingAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(RepresentativeVotingAdmin, self).get_urls()
         admin_urls = patterns('',
-            (r'^parse/$', self.admin_site.admin_view(self.parse))
+            (r'^parse-voting/$', self.admin_site.admin_view(self.parse_voting))
         )
         return admin_urls + urls
 
-    def parse(self, request):
+    def parse_voting(self, request):
         """
-        TODO:
+        View, ktere pres POST prijme data o hlasovani, rozparsuje je a vrati
+        v podobe JSON struktury (na zaklade ktere Javascriptovy kod
+        predvyplni formular).
         """
         content = request.POST.get('voting-content', '')
         voting = {'error': True}
         if content and len(content.strip()):
             try:
-                raw = parse(content.encode('utf-8').split('\n'))
+                # nejdrive zpracujeme zadane udaje nahrubo
+                parsed_voting = parse(content.encode('utf-8').split('\n'))
+                try:
+                    # a ted uz jemneji -> prevod dat do nasich modelu
+                    voting = self.store_voting(parsed_voting)
+                except ParserError as e:
+                    voting['errors'] = e.msg
             except:
-                pass
-            try:
-                voting = self.neco(raw)
-            except ParserError as e:
-                voting['errors'] = e.msg
+                voting['errors'] = u'Chyba v parsování. Zadal jsi správná data?'
 
         return HttpResponse(simplejson.dumps(voting), mimetype="application/json")
 
-    def neco(self, data):
+    def store_voting(self, data):
         """
-        TODO:
+        Ulozi vyparsovana data do DB.
         """
-
         if len(data) != 1:
-            # vyparsovalo se vice nez jen jedno hlasovani
-            return # TODO:
-
+            raise ParserError(u'Zadal jsi více než jen jedno hlasování.')
         data = data[0]
 
         # nalezeni volebniho obdobi

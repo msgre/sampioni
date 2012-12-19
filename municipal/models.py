@@ -324,5 +324,9 @@ class Decision(models.Model):
         return super(Decision, self).save(*args, **kwargs)
 
     @staticmethod
+    def normalize_code(code):
+        return replace_multiple_whitechars(code)
+
+    @staticmethod
     def normalize_title(title):
         return replace_multiple_whitechars(title)

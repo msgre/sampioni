@@ -10,7 +10,7 @@ from .models import ProgrammeHTitle, ProgrammeHDescription, ProgrammeItem
 class ProgrammeItemInlineForm(forms.ModelForm):
     class Meta:
         model = ProgrammeItem
-        fields = ('item', 'title', )
+        fields = ('item', 'title', 'description_orig')
 
     def __init__(self, *args, **kwargs):
         super(ProgrammeItemInlineForm, self).__init__(*args, **kwargs)
@@ -18,10 +18,10 @@ class ProgrammeItemInlineForm(forms.ModelForm):
         self.fields['title'].widget = forms.Textarea(attrs={'rows': '4', 'class':'span12'})
 
     def clean_item(self):
-        ProgrammeItem.normalize_item(self.cleaned_data.get('item', u''))
+        return ProgrammeItem.normalize_item(self.cleaned_data.get('item', u''))
 
     def clean_title(self):
-        ProgrammeItem.normalize_title(self.cleaned_data.get('title', u''))
+        return ProgrammeItem.normalize_title(self.cleaned_data.get('title', u''))
 
 
 class ProgrammeHTitleForm(forms.ModelForm):

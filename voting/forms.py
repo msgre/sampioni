@@ -77,5 +77,13 @@ class DecisionInlineForm(forms.ModelForm):
     class Meta:
         model = Decision
 
+    def __init__(self, *args, **kwargs):
+        super(DecisionInlineForm, self).__init__(*args, **kwargs)
+        self.fields['code'].widget = forms.TextInput(attrs={'class': 'span2'})
+        self.fields['title'].widget = forms.TextInput(attrs={'class': 'span12'})
+
+    def clean_code(self):
+        return Decision.normalize_code(self.cleaned_data.get('code', u''))
+
     def clean_title(self):
         return Decision.normalize_title(self.cleaned_data.get('title', u''))

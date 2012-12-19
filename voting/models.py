@@ -31,6 +31,7 @@ class RepresentativeVoting(models.Model):
         verbose_name = u'Hlasování zastupitelů k projednávanému bodu'
         verbose_name_plural = u'Hlasování zastupitelů k projednávaným bodům'
         ordering = ('-created', )
+        unique_together = ('item', 'order')
 
     def __unicode__(self):
         description = self.description and self.description[:15] or u''
@@ -74,8 +75,8 @@ class RepresentativeVote(models.Model):
     class Meta:
         verbose_name = u'Hlas zastupitele'
         verbose_name_plural = u'Hlasy zastupitelů'
-        #ordering = ('-item__agenda__term__valid_from', 'dparty_short', 'dpolitician_last_name', )
         ordering = ('-created', )
+        unique_together = ('representative', 'voting')
 
     def __unicode__(self):
         return u'%s %s: %s' % (self.dpolitician_first_name, self.dpolitician_last_name, \

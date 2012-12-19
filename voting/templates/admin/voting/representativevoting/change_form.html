@@ -9,15 +9,23 @@
 
     {# modalni okno #}
     <div id="parsovat" class="modal hide">
-        <form action="../parse/" method="post">
+        <form action="../parse-voting/" method="post">
             {% csrf_token %}
             <div class="modal-header">
                 <a href="#" class="close">&times;</a>
                 <h3 id="parsovat-label">Parser výsledků hlasování</h3>
             </div>
             <div class="modal-body">
-                <textarea style="font-family:monospace; font-size:12px;" rows="15" name="voting-content" id="voting-content_id" class="span9"></textarea>
-                <p class="errors"></p>
+                <p>Převeď PDFko s výsledky hlasování do textové podoby s pomocí
+                příkazu:<br/> <code>pdftotext -layout -nopgbrk -enc UTF-8 -q &lt;FILENAME&gt;</code><br /> a pak
+                zde copy&amp;pastni úsek od <code>X. řádné zasedání
+                Zastupitelstva města</code> po poznámku o hlasování (je pod
+                celkovýma výsledkama).<br />
+                Bacha! Vkládej pouze jedno hlasování, ne více najednou.</p>
+                <textarea style="font-family:monospace; font-size:12px;" rows="11" name="voting-content" id="voting-content_id" class="span9"></textarea>
+                <div class="alert-message error" style="margin-top:10px;display:none">
+                  <p id="modal-error"></p>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn primary">Parsovat</button>
@@ -31,11 +39,15 @@
         $(document).ready(function(){
             $('#parsovat form').submit(function(){
                 // TODO: obsluha submitu
-                var $form = $(this);
+                var $form = $(this),
+                    $error = $('#modal-error');
+
+                $error.closest('div').css({'display': 'none'});
                 $.post($form.attr('action'), $form.serialize(), function(data, textStatus, jqXHR){
                     if (textStatus == 'success') {
                         if (data.error) {
-                            $('#parsovat .errors').empty().text(data.errors);
+                            $error.empty().text(data.errors);
+                            $error.closest('div').css({'display': 'block'});
                         }
                         else {
                             $term = $('#id_term');
@@ -67,7 +79,8 @@
                         }
                     }
                     else {
-                        $('#parsovat .errors').empty().text('Nějaká chyba na serveru');
+                        $error.empty().text('Nastala nějaká vážnější chyba během parsování. Zkus to ještě jednou a pokud to zase nevyjde, pořeš problém s administrátorem.');
+                        $error.closest('div').css({'display': 'block'});
                     }
                 });
                 return false;
