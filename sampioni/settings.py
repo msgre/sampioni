@@ -129,6 +129,7 @@ INSTALLED_APPS = (
     'django.contrib.markup',
     'django_extensions',
     'debug_toolbar',
+    'rest_framework',
     'shared',
     'authority',
     #'events',

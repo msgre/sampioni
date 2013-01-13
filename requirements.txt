@@ -9,3 +9,6 @@ PIL
 django-ttag
 -e hg+https://bitbucket.org/salvator/django-admintools-bootstrap#egg=admintools_bootstrap
 python-dateutil
+django-jsonfield
+djangorestframework
+django-filter

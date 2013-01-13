@@ -172,3 +172,66 @@ class ProgrammeHDescriptionView(CreateView):
         item = get_object_or_404(ProgrammeItem, item=self.kwargs['item'], \
                                  programme=self.programme)
         return item
+
+
+# --------------------- api
+
+import re
+from authority.models import Term
+from .models import Programme, ProgrammeItem
+from .serializers import TermSerializer, ProgrammeSerializer, ProgrammeItemSerializer
+from rest_framework import generics
+
+
+# --- Term
+
+TERM_RE = re.compile(r'^\d{4}-\d{4}$')
+
+class APITermList(generics.ListCreateAPIView):
+    model = Term
+    serializer_class = TermSerializer
+
+    def get_queryset(self):
+        qs = Term.objects.all()
+        term = self.request.QUERY_PARAMS.get('term', None)
+        if term is not None and TERM_RE.match(term):
+            term = term.split('-')
+            qs = qs.filter(valid_from__year=int(term[0]), valid_to__year=int(term[1]))
+        return qs
+
+
+class APITermDetail(generics.RetrieveUpdateAPIView):
+    model = Term
+    serializer_class = TermSerializer
+    slug_url_kwarg = 'term'
+    slug_field = 'id'
+
+# --- Programme
+
+class APIProgrammeList(generics.ListCreateAPIView):
+    model = Programme
+    serializer_class = ProgrammeSerializer
+
+    def pre_save(self, obj):
+        obj.term = Term.objects.get(pk=int(self.kwargs['term']))
+
+class APIProgrammeDetail(generics.RetrieveUpdateAPIView):
+    model = Programme
+    serializer_class = ProgrammeSerializer
+    slug_url_kwarg = 'programme'
+    slug_field = 'id'
+
+# --- ProgrammeItem
+
+class APIProgrammeItemList(generics.ListCreateAPIView):
+    model = ProgrammeItem
+    serializer_class = ProgrammeItemSerializer
+
+    def pre_save(self, obj):
+        obj.programme = Programme.objects.get(pk=int(self.kwargs['programme']))
+
+class APIProgrammeItemDetail(generics.RetrieveUpdateAPIView):
+    model = ProgrammeItem
+    serializer_class = ProgrammeItemSerializer
+    slug_url_kwarg = 'item'
+    slug_field = 'id'
