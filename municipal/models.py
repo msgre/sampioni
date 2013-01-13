@@ -39,8 +39,8 @@ class Programme(models.Model):
     updated = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
 
     class Meta:
-        verbose_name = u'Program jednání zastupitelstva'
-        verbose_name_plural = u'Program jednání zastupitelstev'
+        verbose_name = u'Program zastupitelstva'
+        verbose_name_plural = u'Program zastupitelstev'
         ordering = ('-term__valid_from', 'order')
 
     def __unicode__(self):
@@ -136,8 +136,8 @@ class ProgrammeItem(models.Model):
     updated          = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
 
     class Meta:
-        verbose_name = u'Bod na programu jednání zastupitelstva'
-        verbose_name_plural = u'Body z programu jednání zastupitelstva'
+        verbose_name = u'Bod programu zastupitelstva'
+        verbose_name_plural = u'Body programu zastupitelstva'
         ordering = ('ditem', )
 
     def __unicode__(self):

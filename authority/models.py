@@ -54,8 +54,8 @@ class PersonSynonym(models.Model):
     person = models.ForeignKey(Person, verbose_name=u'Člověk', related_name='synonymous', null=True, blank=True)
 
     class Meta:
-        verbose_name = u'Alternativní pojmenování člověka'
-        verbose_name_plural = u'Alternativní pojmenování člověka'
+        verbose_name = u'Alt. jméno člověka'
+        verbose_name_plural = u'Alt. jména člověka'
         ordering = ('person', 'nick', )
 
     def __unicode__(self):

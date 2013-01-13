@@ -28,8 +28,8 @@ class RepresentativeVoting(models.Model):
     updated     = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
 
     class Meta:
-        verbose_name = u'Hlasování zastupitelů k projednávanému bodu'
-        verbose_name_plural = u'Hlasování zastupitelů k projednávaným bodům'
+        verbose_name = u'Hlasování zastupitelů k bodu'
+        verbose_name_plural = u'Hlasování zastupitelů k bodům'
         ordering = ('-created', )
         unique_together = ('item', 'order')
 
